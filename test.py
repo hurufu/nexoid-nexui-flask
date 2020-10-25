@@ -10,8 +10,8 @@ def handle_scapi_requests(**kwargs):
             print('req: ' + req.decode(encoding='UTF-8'))
 
             rsp = b'<ScapiResponse><ack/></ScapiResponse>'
-            print('rsp: ' + rsp.decode(encoding='UTF-8'))
             s.send(rsp)
+            print('rsp: ' + rsp.decode(encoding='UTF-8'))
 
 def start_req_handler():
     req_params = {
@@ -26,12 +26,12 @@ def main():
         evt = b'<ScapiNotification><events><languageSelection><language>pl</language>'\
               b'</languageSelection><serviceSelection><serviceId><cardValidityCheck/>'\
               b'</serviceId></serviceSelection></events></ScapiNotification>'
-        print('ntf: ' + evt.decode(encoding='UTF-8'))
         n.send(evt)
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
 
         evt = b'<ScapiNotification><events><terminate/></events></ScapiNotification>'
-        print('ntf: ' + evt.decode(encoding='UTF-8'))
         n.send(evt)
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
 
         sleep(1)
 
