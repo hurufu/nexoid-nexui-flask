@@ -28,6 +28,11 @@ def main():
               b'</serviceId></serviceSelection></events></ScapiNotification>'
         print('ntf: ' + evt.decode(encoding='UTF-8'))
         n.send(evt)
-        sleep(5)
+
+        evt = b'<ScapiNotification><events><terminate/></events></ScapiNotification>'
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
+        n.send(evt)
+
+        sleep(1)
 
 main()
