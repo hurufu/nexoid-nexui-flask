@@ -23,9 +23,23 @@ def start_req_handler():
 def main():
     start_req_handler()
     with ns.NotificationSocket(listen='tcp://0.0.0.0:50154') as n:
+        evt = b'<ScapiNotification><events></events></ScapiNotification>'
+        n.send(evt)
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
+
+        evt = b'<ScapiNotification><events/></ScapiNotification>'
+        n.send(evt)
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
+
         evt = b'<ScapiNotification><events><languageSelection><language>pl</language>'\
               b'</languageSelection><serviceSelection><serviceId><cardValidityCheck/>'\
               b'</serviceId></serviceSelection></events></ScapiNotification>'
+        n.send(evt)
+        print('ntf: ' + evt.decode(encoding='UTF-8'))
+
+        evt = b'<ScapiNotification><events><manualEntry><pan>4485936516057131</pan>'\
+              b'<expirationDate><year>22</year><month>11</month></expirationDate>'\
+              b'<cvdData><cvd>123</cvd></cvdData></manualEntry></events></ScapiNotification>'
         n.send(evt)
         print('ntf: ' + evt.decode(encoding='UTF-8'))
 
