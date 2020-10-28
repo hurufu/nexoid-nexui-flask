@@ -1,13 +1,19 @@
 import response_socket as rs
 import notification_socket as ns
+import message_queue as mq
 import threading
 from time import sleep
 
 def handle_scapi_requests(**kwargs):
-    with rs.ResponseSocket(**kwargs) as s:
+    with rs.ResponseSocket(**kwargs) as s,\
+         mq.MessageQueue('/nexoid:v1:display-updates', read = False) as q:
         while True:
+            sleep(1)
+
             req = s.recv()
             print('req: ' + req.decode(encoding='UTF-8'))
+
+            q.send(req)
 
             rsp = b'<ScapiResponse><ack/></ScapiResponse>'
             s.send(rsp)
@@ -47,6 +53,6 @@ def main():
         n.send(evt)
         print('ntf: ' + evt.decode(encoding='UTF-8'))
 
-        sleep(1)
+        sleep(100)
 
 main()
