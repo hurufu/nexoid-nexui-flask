@@ -1,0 +1,11 @@
+ul.update_interface {
+    list-style-type: none;
+    overflow: hidden;
+    display: inline;
+}
+
+ul.update_interface li {
+    float: left;
+    margin-right: 5px;
+    margin-left: 0px;
+}
