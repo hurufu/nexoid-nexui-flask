@@ -1,0 +1,3 @@
+[submodule "XSLTForms"]
+	path = nexui/static/xsltforms
+	url = git://github.com/AlainCouthures/xsltforms.git
