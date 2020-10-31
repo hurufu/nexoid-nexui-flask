@@ -19,18 +19,21 @@ def handle_display_update():
         rsp = 'This endpoint is meant only for event stream listeners'
         return Response(rsp, mimetype='text/plain')
 
+    def make_event(data):
+        ret = 'data: ' + data.decode(encoding='UTF-8')
+        click.echo(ret)
+        return ret + '\n\n'
+
     def get_update_event():
         mqkw = {
             'flags': ipc.O_CREAT,
             'read': True,
-            'write': False
+            'write': False,
         }
         with m.MessageQueue('/nexoid:v1:display', **mqkw) as msq:
             while True:
-                (buf, priority) = msq.receive()
-                ret = 'data: ' + buf.decode(encoding='UTF-8') + '\n\n'
-                click.echo('Forwarding msg with priority: ' + str(priority) + '\n' + ret)
-                yield ret
+                data, _ = msq.receive()
+                yield make_event(data=data)
 
     evt = get_update_event()
     return Response(evt, mimetype='text/event-stream')

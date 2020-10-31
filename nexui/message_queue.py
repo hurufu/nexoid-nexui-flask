@@ -21,3 +21,4 @@ class MessageQueue:
                   + 'type: ' + str(exception_type) + ' ' + str(exception_value)
         click.echo(debug_msg)
         self.queue.close()
+        self.queue.unlink()
