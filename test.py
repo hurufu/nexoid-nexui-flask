@@ -6,7 +6,7 @@ from time import sleep
 
 def handle_scapi_requests(**kwargs):
     with rs.ResponseSocket(**kwargs) as s,\
-         mq.MessageQueue('/nexoid:v1:display-updates', read = False) as q:
+         mq.MessageQueue('/nexoid:v1:display', read = False) as q:
         while True:
             sleep(1)
 
