@@ -5,7 +5,7 @@ if (!!window.EventSource) {
     var xp = new XSLTProcessor();
 
     var xmlReq = new XMLHttpRequest();
-    xmlReq.open("GET", "request.xsl", false);
+    xmlReq.open("GET", "scap-request.xsl", false);
     xmlReq.send(null);
     xp.importStylesheet(xmlReq.responseXML);
 

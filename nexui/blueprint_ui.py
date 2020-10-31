@@ -4,6 +4,7 @@ from flask import (
     request,
     Response,
 )
+from . import message_queue as m
 
 bp = Blueprint('pay', __name__, url_prefix='/pay')
 
@@ -13,7 +14,7 @@ def handle_display_update():
         return Response('This endpoint is meant only for event stream listeners', mimetype='text/plain')
 
     def get_update_event():
-        with m.MessageQueue('/nexoid:v1:display-updates', flags = pi.O_CREAT, read = True, write = False) as mq:
+        with m.MessageQueue('/nexoid:v1:display', flags = m.O_CREAT, read = True, write = False) as mq:
             while True:
                 (buf, priority) = mq.receive()
                 ret = 'data: ' + buf.decode(encoding='UTF-8') + '\n\n'

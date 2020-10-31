@@ -1,5 +1,7 @@
 import posix_ipc
 
+O_CREAT = posix_ipc.O_CREAT
+
 class MessageQueue:
 
     def __init__(self, *args, **kwargs):
