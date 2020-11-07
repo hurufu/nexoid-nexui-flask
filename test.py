@@ -5,23 +5,26 @@ from time import sleep
 
 import response_socket as rs
 import notification_socket as ns
-import message_queue as mq
+import request_socket as rq
 
 def handle_scapi_requests(**kwargs):
     '''Main request handling function
     '''
-    with rs.ResponseSocket(**kwargs) as sock,\
-         mq.MessageQueue('/nexoid:v1:display', read = False) as queue:
+    with rs.ResponseSocket(**kwargs['fat']) as fat,\
+         rq.RequestSocket(**kwargs['nexui']) as nexui:
         while True:
             sleep(1)
 
-            req = sock.recv()
+            req = fat.recv()
             print('req: ' + req.decode(encoding='UTF-8'))
 
-            queue.send(req)
+            rsp = b''
+            try:
+                nexui.send(req)
+                rsp = nexui.recv()
+            finally:
+                fat.send(rsp)
 
-            rsp = b'<ScapiResponse><ack/></ScapiResponse>'
-            sock.send(rsp)
             print('rsp: ' + rsp.decode(encoding='UTF-8'))
 
 def start_req_handler():
@@ -31,7 +34,12 @@ def start_req_handler():
         'name': 'reqhndlr',
         'daemon': True,
         'kwargs': {
-            'listen': 'tcp://0.0.0.0:50153'
+            'fat': {
+                'listen': 'tcp://0.0.0.0:50153'
+            },
+            'nexui': {
+                'dial': 'ipc:///tmp/nexui'
+            }
         }
     }
     req_thread = threading.Thread(**thread_params)
