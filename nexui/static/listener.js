@@ -1,26 +1,21 @@
-if (!!window.EventSource) {
-    var source = new EventSource('/pay/display');
+var sock = new Socket({
+    protocol: 'req.sp.nanomsg.org',
+    debug: false,
+    sendArrayBuffer: true,
+    receiveArrayBuffer: true,
+});
 
-    var dp = new DOMParser();
-    var xp = new XSLTProcessor();
+sock.connect('ws' + '://' + location.hostname + ':' + 51004 + '/');
 
-    var xmlReq = new XMLHttpRequest();
-    xmlReq.open("GET", "request.xsl", false);
-    xmlReq.send(null);
-    xp.importStylesheet(xmlReq.responseXML);
+var dec = new TextDecoder('utf-8');
+var enc = new TextEncoder();
 
-    source.onmessage = function(e) {
-        const newElement = document.createElement("li");
-        const eventList = document.getElementById("list");
-
-        var xmlDoc = dp.parseFromString(e.data, "text/xml");
-        var xml = xmlDoc.getElementsByTagName("ScapiRequest")[0]
-
-        const now = new Date(Date.now());
-        xp.setParameter("", "current-time", now.toLocaleString());
-
-        var fragment = xp.transformToFragment(xml, document);
-
-        eventList.prepend(fragment);
+sock.on('data', function(msg) {
+    function make_response(str) {
+        var txt = Array.from(enc.encode(str));
+        var hdr = Array.from(new Uint8Array(msg)).slice(0, 4);
+        var rsp = new Uint8Array(hdr.concat(txt));
+        return rsp;
     }
-}
+    sock.send(make_response('<ScapiResponse><ack/></ScapiResponse>'));
+});
