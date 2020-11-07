@@ -8,8 +8,12 @@ export FLASK_ENV
 FLASK_ARGS_run := --host 0.0.0.0 --port 5000
 
 .PHONY: default
-default: flask-run
+default: run
 
 .PHONY: flask-%
 flask-%:
 	$(FLASK) $* $(FLASK_ARGS_$*)
+
+.PHONY: run
+run:
+	python -m nexui $(FLASK_ARGS_run)
