@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="xsltforms1.5/build/xsl/xsltforms.xsl" type="text/xsl"?>
+<?xsltforms-options debug="yes"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events">
+  <head>
+    <title>UI update report</title>
+    <link rel="stylesheet" href="request.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/nanomsg-browser@0.2.0/dist/nanomsg.min.js"/>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"/>
+    <script src="xforms-utils.js"/>
+    <script src="listener.js"/>
+    <xf:model id="request_log_model">
+      <xf:instance xmlns="" id="request_log_instance">
+        <logs>
+          <txt>
+            <id/>
+          </txt>
+        </logs>
+      </xf:instance>
+      <xf:action ev:event="ui_request">
+        <xf:insert nodeset="instance('request_log_instance')/txt" at="last()" position="after"/>
+        <xf:setvalue ref="instance('request_log_instance')/txt[last()]/id" value="event('id')"/>
+      </xf:action>
+    </xf:model>
+  </head>
+  <body>
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>ID</th>
+          <th>API</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody id="request-log-view">
+        <td/>
+        <td>
+          <xf:repeat nodeset="instance('request_log_instance')/txt">
+            <xf:output ref="id"/>
+          </xf:repeat>
+        </td>
+        <td/>
+        <td/>
+      </tbody>
+    </table>
+  </body>
+</html>
