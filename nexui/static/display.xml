@@ -13,6 +13,7 @@
       <xf:instance xmlns="" id="request_log_instance">
         <logs>
           <txt>
+            <time/>
             <id/>
           </txt>
         </logs>
@@ -20,6 +21,7 @@
       <xf:action ev:event="ui_request">
         <xf:insert nodeset="instance('request_log_instance')/txt" at="last()" position="after"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[last()]/id" value="event('id')"/>
+        <xf:setvalue ref="instance('request_log_instance')/txt[last()]/time" value="substring(local-dateTime(), 12, 8)"/>
       </xf:action>
     </xf:model>
   </head>
@@ -34,14 +36,18 @@
         </tr>
       </thead>
       <tbody id="request-log-view">
-        <td/>
-        <td>
-          <xf:repeat nodeset="instance('request_log_instance')/txt">
-            <xf:output ref="id"/>
-          </xf:repeat>
-        </td>
-        <td/>
-        <td/>
+        <xf:repeat nodeset="instance('request_log_instance')/txt">
+          <tr>
+            <td>
+              <xf:output value="time"/>
+            </td>
+            <td>
+              <xf:output ref="id"/>
+            </td>
+            <td/>
+            <td/>
+          </tr>
+        </xf:repeat>
       </tbody>
     </table>
   </body>
