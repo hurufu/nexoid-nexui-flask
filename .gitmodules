@@ -1,3 +1,6 @@
 [submodule "XSLTForms"]
 	path = nexui/static/xsltforms
 	url = git://github.com/AlainCouthures/xsltforms.git
+[submodule "XSLTForms1.5"]
+	path = nexui/static/xsltforms1.5
+	url = git://github.com/AlainCouthures/declarative4all.git
