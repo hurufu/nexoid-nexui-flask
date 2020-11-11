@@ -51,31 +51,39 @@ def map_output(language, out):
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
-        'ssn': map_sale_system_notification,
     }
     return mapping[out[0]](language, out[1])
 
 def convert_output(api, payload):
     '''convert_output'''
-    def map_all_outputs(language, what):
-        return [map_output(language, w) for w in what]
-    return {
-        'api': api,
-        'line': ' '.join(map_all_outputs(payload['language'], payload['what'])),
-    }
+    language = payload['language']
+    ssn = []
+    crd = []
+    for w in payload['what']:
+        if w[0] == 'ssn':
+            ssn.append(map_sale_system_notification(language, w[1]))
+        else:
+            crd.append(map_output(language, w))
+    ret = []
+    if len(ssn) != 0:
+        ret.append({'api': 'ssn', 'line': ssn})
+    if len(crd) != 0:
+        ret.append({'api': api, 'line': crd})
+    return ret
 
 def convert_interfaces(_, payload):
     '''convert_interfaces'''
-    return {
+    return [{
         'api': 'interface',
         'line': BitArray(payload['interfaceStatus'][0]).bin,
-    }
+    }]
 
-def convert_print(api, _):
+def convert_print(api, payload):
     '''convert_print'''
-    return {
+    return [{
         'api': api,
-    }
+        'line': payload['type']
+    }]
 
 def convert_to_request_log_event(msg):
     '''convert_to_request_log_event'''
