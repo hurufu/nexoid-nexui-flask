@@ -11,7 +11,8 @@ def map_cardholder_message(language, msg):
         'crdhldrMsgWelcome': { 'en': 'Welcome' },
         'crdhldrEmvPleaseWait': { 'en': 'Please Wait...' },
         'crdhldrEmvApproved': { 'en': 'Approved.' },
-        'rdhldrMsgTransactionAborted': { 'en': 'Transaction Aborted!' }
+        'rdhldrMsgTransactionAborted': { 'en': 'Transaction Aborted!' },
+        'crdhldrMsgReceiptPrintingFailed': { 'en': 'Receipt printing failed!' },
     }
     return mapping[msg][language]
 
