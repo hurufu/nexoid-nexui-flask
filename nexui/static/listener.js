@@ -21,6 +21,8 @@ sock.on('data', function(msg) {
         var txt = Array.from(enc.encode(JSON.stringify(obj)));
         return new Uint8Array(get_header().concat(txt));
     }
-    xf_fireEvent("request_log_model", "request_log_event", get_payload());
+    get_payload().forEach(function(e) {
+        xf_fireEvent("request_log_model", "request_log_event", e);
+    });
     sock.send(make_response({ack: {}}));
 });
