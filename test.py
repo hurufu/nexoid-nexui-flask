@@ -6,6 +6,7 @@ from time import sleep
 import response_socket as rs
 import notification_socket as ns
 import request_socket as rq
+from scapi_message import (tonexui, fromnexui)
 
 def handle_scapi_requests(**kwargs):
     '''Main request handling function
@@ -15,13 +16,13 @@ def handle_scapi_requests(**kwargs):
         while True:
             sleep(1)
 
-            req = fat.recv()
-            print('req: ' + req.decode(encoding='UTF-8'))
+            req = tonexui(fat.recv())
+            print('req: ' + req)
 
             rsp = b''
             try:
-                nexui.send(req)
-                rsp = nexui.recv()
+                nexui.send(req.encode('UTF-8'))
+                rsp = fromnexui(nexui.recv())
             finally:
                 fat.send(rsp)
 
