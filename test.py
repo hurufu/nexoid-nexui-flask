@@ -14,8 +14,6 @@ def handle_scapi_requests(**kwargs):
     with rs.ResponseSocket(**kwargs['fat']) as fat,\
          rq.RequestSocket(**kwargs['nexui']) as nexui:
         while True:
-            sleep(1)
-
             req = tonexui(fat.recv())
             print('req: ' + req)
 
