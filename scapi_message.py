@@ -59,11 +59,11 @@ def convert_output(api, payload):
     language = payload['language']
     ssn = []
     crd = []
-    for w in payload['what']:
-        if w[0] == 'ssn':
-            ssn.append(map_sale_system_notification(language, w[1]))
+    for what in payload['what']:
+        if what[0] == 'ssn':
+            ssn.append(map_sale_system_notification(language, what[1]))
         else:
-            crd.append(map_output(language, w))
+            crd.append(map_output(language, what))
     ret = []
     if len(ssn) != 0:
         ret.append({'api': 'ssn', 'line': ssn})
