@@ -9,22 +9,23 @@ import request_socket as rq
 from scapi_message import (tonexui, fromnexui)
 
 def handle_scapi_requests(**kwargs):
-    '''Main request handling function
-    '''
+    '''Main request handling function'''
     with rs.ResponseSocket(**kwargs['fat']) as fat,\
          rq.RequestSocket(**kwargs['nexui']) as nexui:
-        while True:
+        def fat_recv():
             req = tonexui(fat.recv())
             print('req: ' + req)
+            return req.encode('UTF-8')
+        def fat_send(rsp):
+            rsp_buf = fromnexui(rsp)
+            fat.send(rsp_buf)
+            print('rsp: ' + rsp_buf.decode(encoding='UTF-8'))
 
-            rsp = b''
-            try:
-                nexui.send(req.encode('UTF-8'))
-                rsp = fromnexui(nexui.recv())
-            finally:
-                fat.send(rsp)
-
-            print('rsp: ' + rsp.decode(encoding='UTF-8'))
+        while True:
+            req = fat_recv()
+            nexui.send(req)
+            rsp = nexui.recv()
+            fat_send(rsp)
 
 def start_req_handler():
     '''Starts request handling thread'''
