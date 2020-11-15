@@ -69,10 +69,6 @@ def main():
         ntf.send(evt)
         print('ntf: ' + evt.decode(encoding='UTF-8'))
 
-        evt = b'<ScapiNotification><events><terminate/></events></ScapiNotification>'
-        ntf.send(evt)
-        print('ntf: ' + evt.decode(encoding='UTF-8'))
-
         sleep(100)
 
 main()
