@@ -8,49 +8,315 @@ asn = asn1tools.compile_files('Scapi.asn1', 'xer')
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
     mapping = {
-        'crdhldrMsgWelcome': { 'en': 'Welcome' },
-        'crdhldrEmvPleaseWait': { 'en': 'Please Wait...' },
-        'crdhldrEmvApproved': { 'en': 'Approved.' },
-        'rdhldrMsgTransactionAborted': { 'en': 'Transaction Aborted!' },
-        'crdhldrMsgReceiptPrintingFailed': { 'en': 'Receipt printing failed!' },
+        'crdhldrMsgWelcome': {
+            'en': 'Welcome',
+            'pl': 'Witamy',
+            'fr': 'Bienvenue',
+            'de': 'Willkommen'
+        },
+        'crdhldrEmvPleaseWait': {
+            'en': 'Please Wait...',
+            'pl': 'Proszę czekać...',
+            'fr': "S'il vous plaît, attendez...",
+            'de': 'Warten Sie mal...'
+        },
+        'crdhldrEmvApproved': {
+            'en': 'Approved.',
+            'pl': 'Zgoda.',
+            'fr': 'Approuvée',
+            'de': 'Genehmigt'
+        },
+        'rdhldrMsgTransactionAborted': {
+            'en': 'Transaction Aborted!',
+            'pl': 'Transakcja przerwana!',
+            'fr': 'Transaction abandonnée!',
+            'de': 'Transaktion abgebrochen!'
+        },
+        'crdhldrMsgReceiptPrintingFailed': {
+            'en': 'Receipt printing failed!',
+            'pl': 'Drukowanie paragonu nie powiodło się!',
+            'fr': "L'impression du reçu a échoué!",
+            'de': 'Belegdruck fehlgeschlagen!',
+        },
+        'crdhldrMsgTransactionAborted': {
+            'en': 'Transaction Aborted',
+            'pl': 'Transakcję przerwano',
+            'fr': 'Transaction annulée',
+            'de': 'Transaktion abgebrochen',
+        }
     }
     return mapping[msg][language]
 
 def map_selected_service(language, srv):
     '''map_selected_service'''
     mapping = {
-        'none': { 'en': 'None' },
-        'payment': { 'en': 'Sale' },
-        'refund': { 'en': 'Refund' },
-        'cancellation': { 'en': 'Cancellation' },
-        'preauth': { 'en': 'Pre-Authorisation' },
-        'updatePreauth': { 'en': 'Update Pre-Auth.' },
-        'completion': { 'en': 'Pre-Auth. Completion' },
-        'cashAdvance': { 'en': 'Cash Advance' },
-        'deferredPayment': { 'en': 'Deffered Payment' },
-        'deferredPaymentCompletion': { 'en': 'Deffered Payment Completion' },
-        'voiceAuthorisation': { 'en': 'Voice Auth.' },
-        'cardholderDetection': { 'en': 'Cardholder Detection' },
-        'cardValidityCheck': { 'en': 'Card Validity Check' },
-        'noShow': { 'en': 'No-show' },
+        'none': {
+            'en': 'None',
+            'pl': 'Żaden',
+            'fr': 'Aucune',
+            'de': 'Keiner',
+        },
+        'payment': {
+            'en': 'Sale',
+            'pl': 'Sprzedaż',
+            'fr': 'Vente',
+            'de': 'Verkauf',
+        },
+        'refund': {
+            'en': 'Refund',
+            'pl': 'Zwrot',
+            'fr': 'Rembourser',
+            'de': 'Rückerstattung',
+        },
+        'cancellation': {
+            'en': 'Cancellation',
+            'pl': 'Unieważnienie',
+            'fr': 'Annulation',
+            'de': 'Stornierung',
+        },
+        'preauth': {
+            'en': 'Pre-Authorisation',
+            'pl': 'Preautoryzacja',
+            'fr': 'Pré-autorisation',
+            'de': 'Vorautorisierung',
+        },
+        'updatePreauth': {
+            'en': 'Update Pre-Auth.',
+            'pl': 'Zaktualizuj preautoryzację',
+            'fr': 'Mettre à jour la pré-autorisation',
+            'de': 'Vorautorisierung aktualisieren',
+        },
+        'completion': {
+            'en': 'Pre-Auth. Completion',
+            'pl': 'Zakończenie pre-autoryzacji',
+            'fr': 'Achèvement de la pré-autorisation',
+            'de': 'Abschluss der Vorautorisierung',
+        },
+        'cashAdvance': {
+            'en': 'Cash Advance',
+            'pl': 'Zaliczki pieniężne',
+            'fr': 'Avance de fonds',
+            'de': 'Vorauszahlung',
+        },
+        'deferredPayment': {
+            'en': 'Deffered Payment',
+            'pl': 'Opóźniona płatność',
+            'fr': 'Paiement différé',
+            'de': 'Zahlungsaufschub',
+        },
+        'deferredPaymentCompletion': {
+            'en': 'Deffered Payment Completion',
+            'pl': 'Zakończenie odroczonej płatności',
+            'fr': 'Achèvement du paiement différé',
+            'de': 'Abschluss der Zahlungsaufschub',
+        },
+        'voiceAuthorisation': {
+            'en': 'Voice Auth.',
+            'pl': 'Autoryzacja głosowa',
+            'fr': 'Autorisation vocale',
+            'de': 'Sprachautorisierung',
+        },
+        'cardholderDetection': {
+            'en': 'Cardholder Detection',
+            'pl': 'Wykrywanie posiadacza karty',
+            'fr': 'Détection des titulaires de carte',
+            'de': 'Karteninhabererkennung',
+        },
+        'cardValidityCheck': {
+            'en': 'Card Validity Check',
+            'pl': 'Sprawdzanie ważności karty',
+            'fr': 'Vérification de la validité de la carte',
+            'de': 'Überprüfung der Kartengültigkeit',
+        },
+        'noShow': {
+            'en': 'No-show',
+            'pl': 'Brak pokazu',
+            'fr': 'Non-présentation',
+            'de': 'No-show',
+        },
     }
     return mapping[srv][language]
 
 def map_sale_system_notification(language, ssn):
     '''map_sale_system_notification'''
     mapping = {
-        'crdhldrSsnCardRemovalRequested': { 'en': 'Remove Card' },
-        'crdhldrSsnCardRemoved': { 'en': 'Card Removed' },
-        'crdhldrSsnRequestSignature': { 'en': 'Request Signature' },
-        'crdhldrSsnReceiptPrintingFailed': { 'en': 'Printing Failed' },
+        'crdhldrSsnCardRemovalRequested': {
+            'en': 'Remove Card',
+            'pl': 'Usuń kartę',
+            'fr': 'Retirer la carte',
+            'de': 'Karte entfernen',
+        },
+        'crdhldrSsnCardRemoved': {
+            'en': 'Card Removed',
+            'pl': 'Karta usunięta',
+            'fr': 'Carte supprimée',
+            'de': 'Karte entfernt',
+        },
+        'crdhldrSsnRequestSignature': {
+            'en': 'Request Signature',
+            'pl': 'Poproś o podpis',
+            'fr': 'Demande de signature',
+            'de': 'Unterschrift anfordern',
+        },
+        'crdhldrSsnReceiptPrintingFailed': {
+            'en': 'Printing Failed',
+            'pl': 'Drukowanie nie powiodło się',
+            'fr': "L'impression a échoué",
+            'de': 'Druck fehlgeschlagen',
+        },
     }
     return mapping[ssn][language]
+
+def map_nokreason(language, nok):
+    '''map_nokreason'''
+    mapping = {
+        'none': {
+            'en': 'None',
+            'pl': 'Brak',
+            'fr': 'Aucune',
+            'de': 'Keiner',
+        },
+        'notImplemented': {
+            'en': 'Not implemented',
+            'pl': 'Nie zaimplementowano',
+            'fr': 'Pas mis en œuvre',
+            'de': 'Nicht implementiert',
+        },
+        'originalTrxNotFound': {
+            'en': 'Original transaction not found',
+            'pl': 'Nie znaleziono oryginalnej transakcji',
+            'fr': 'Transaction originale introuvable',
+            'de': 'Ursprüngliche Transaktion nicht gefunden',
+        },
+        'technicalError': {
+            'en': 'Technical Error',
+            'pl': 'Błąd techniczny',
+            'fr': 'Erreur technique',
+            'de': 'Technischer Fehler',
+        },
+        'missingData': {
+            'en': 'Missing Data',
+            'pl': 'Brakujące dane',
+            'fr': 'Données manquantes',
+            'de': 'Fehlende Daten',
+        },
+        'confError': {
+            'en': 'Conf. Error',
+            'pl': '',
+            'fr': '',
+            'de': '',
+        },
+        'noPermission': {
+            'en': 'No permission',
+            'pl': 'Brak pozwolenia',
+            'fr': 'Aucune autorisation',
+            'de': 'Keine Erlaubnis',
+        },
+        'configurationError': {
+            'en': 'Configuration Error',
+            'pl': 'Błąd konfiguracji',
+            'fr': 'Erreur de configuration',
+            'de': 'Konfigurationsfehler',
+        },
+        'amountError': {
+            'en': 'Amount Error',
+            'pl': 'Błąd kwoty',
+            'fr': 'Erreur de montant',
+            'de': 'Betrag Fehler',
+        },
+        'kernelError': {
+            'en': 'Kernel Error',
+            'pl': 'Błąd jądra',
+            'fr': 'Erreur de noyau',
+            'de': 'Kernelfehler',
+        },
+        'dataError': {
+            'en': 'Data Error',
+            'pl': 'Błąd danych',
+            'fr': 'Erreur de donnée',
+            'de': 'Datenfehler',
+        },
+        'noCardInserted': {
+            'en': 'No Card Inserted',
+            'pl': 'Nie włożono karty',
+            'fr': 'Aucune carte insérée',
+            'de': 'Keine Karte eingelegt',
+        },
+        'cancelled': {
+            'en': 'Cancelled',
+            'pl': 'Anulowany',
+            'fr': 'Annulé',
+            'de': 'Abgesagt',
+        },
+        'aborted': {
+            'en': 'Aborted',
+            'pl': 'Przerwano',
+            'fr': 'Interrompu',
+            'de': 'Unterbrochen',
+        },
+        'timeout': {
+            'en': 'Timeout',
+            'pl': 'Koniec czasu',
+            'fr': 'Temps libre',
+            'de': 'Auszeit',
+        },
+        'cardMissing': {
+            'en': 'Card Missing',
+            'pl': 'Brak karty',
+            'fr': 'Carte manquante',
+            'de': 'Karte fehlt',
+        },
+        'chipError': {
+            'en': 'Chip Error',
+            'pl': 'Błąd chipa',
+            'fr': 'Erreur de puce',
+            'de': 'Chipfehler',
+        },
+        'noProfile': {
+            'en': 'No Profile',
+            'pl': 'Brak profilu',
+            'fr': 'Aucun profil',
+            'de': 'Kein Profil',
+        },
+        'fallbackProhibited': {
+            'en': 'Fallback Prohibited',
+            'pl': 'Zabronione zastępowanie',
+            'fr': 'Repli interdit',
+            'de': 'Fallback verboten',
+        },
+        'technologyNotSupported': {
+            'en': 'Technology Not Supported',
+            'pl': 'Technologia nie jest obsługiwana',
+            'fr': 'Technologie non prise en charge',
+            'de': 'Technologie wird nicht unterstützt',
+        },
+        'gpo6985': {
+            'en': 'GPO6985',
+            'pl': 'GPO6985',
+            'fr': 'GPO6985',
+            'de': 'GPO6985',
+        },
+        'cardBlocked': {
+            'en': 'Card Blocked',
+            'pl': 'Karta zablokowana',
+            'fr': 'Carte bloquée',
+            'de': 'Karte gesperrt',
+        },
+        'emptyList': {
+            'en': 'Empty List',
+            'pl': 'Pusta lista',
+            'fr': 'Liste vide',
+            'de': 'Leere Liste',
+        }
+    }
+    return mapping[nok][language]
 
 def map_output(language, out):
     '''map_output'''
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
+        'nokReason': map_nokreason,
     }
     return mapping[out[0]](language, out[1])
 
