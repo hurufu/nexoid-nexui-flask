@@ -75,7 +75,7 @@ def convert_interfaces(_, payload):
     '''convert_interfaces'''
     return [{
         'api': 'interface',
-        'line': BitArray(payload['interfaceStatus'][0]).bin,
+        'line': [BitArray(payload['interfaceStatus'][0]).bin],
     }]
 
 def convert_print(api, payload):
