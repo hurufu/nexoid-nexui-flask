@@ -22,7 +22,7 @@ sock.on('data', function(msg) {
         return new Uint8Array(get_header().concat(txt));
     }
     get_payload().forEach(function(e) {
-        xf_fireEvent("request_log_model", "request_log_event", e);
+        xf_fireEvent("request_log_model", "request_log_event", {api: e.api, line: String(e.line)});
     });
     sock.send(make_response({ack: {}}));
 });
