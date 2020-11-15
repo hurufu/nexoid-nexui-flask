@@ -48,7 +48,7 @@ def start_req_handler():
 def main():
     '''Main'''
     start_req_handler()
-    with ns.NotificationSocket(listen='ipc:///tmp/fatnt') as ntf:
+    with ns.NotificationSocket(dial='ipc:///tmp/fatnt') as ntf:
         evt = b'<ScapiNotification><events></events></ScapiNotification>'
         ntf.send(evt)
         print('ntf: ' + evt.decode(encoding='UTF-8'))
