@@ -4,6 +4,7 @@ import threading
 from flask import Flask
 import click
 
+from timebudget import timebudget
 from . import blueprint_ui as ui
 from . import request_socket as rq
 from . import response_socket as rs
@@ -20,8 +21,11 @@ def start_ui_server():
         with rs.Socket(**kwargs['nexui']) as nexui,\
              rq.Socket(**kwargs['browser']) as browser:
             while True:
-                browser.send(nexui.recv())
-                nexui.send(browser.recv())
+                req = nexui.recv()
+                with timebudget("Browser roundtrip", quiet=kwargs['quiet_time']):
+                    browser.send(req)
+                    rsp = browser.recv()
+                nexui.send(rsp)
 
     thread_params = {
         'target': forward_ui_requests,
@@ -33,7 +37,8 @@ def start_ui_server():
             },
             'nexui': {
                 'listen': 'ipc:///tmp/nexui'
-            }
+            },
+            'quiet_time': True,
         }
     }
     threading.Thread(**thread_params).start()
