@@ -34,7 +34,7 @@ def start_req_handler():
         'daemon': True,
         'kwargs': {
             'fat': {
-                'listen': 'tcp://0.0.0.0:50153'
+                'listen': 'ipc:///tmp/fatrq'
             },
             'nexui': {
                 'dial': 'ipc:///tmp/nexui'
@@ -47,7 +47,7 @@ def start_req_handler():
 def main():
     '''Main'''
     start_req_handler()
-    with ns.NotificationSocket(listen='tcp://0.0.0.0:50154') as ntf:
+    with ns.NotificationSocket(listen='ipc:///tmp/fatnt') as ntf:
         evt = b'<ScapiNotification><events></events></ScapiNotification>'
         ntf.send(evt)
         print('ntf: ' + evt.decode(encoding='UTF-8'))
