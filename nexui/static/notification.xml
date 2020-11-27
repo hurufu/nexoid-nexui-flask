@@ -142,26 +142,32 @@
             </f:itemset>
           </f:select1>
           <f:group ref="expirationDate">
-            <f:label>Expitation Date</f:label>
-            <f:input ref="year">
-              <f:label>Year: </f:label>
-              <f:alert>2 digits from 20 to 99</f:alert>
-            </f:input>
-            <f:input ref="month">
-              <f:label>Month: </f:label>
-              <f:alert>2 digits from 1 to 12</f:alert>
-            </f:input>
+            <fieldset>
+              <legend>Expitation Date</legend>
+              <f:input ref="year">
+                <f:label>Year: </f:label>
+                <f:alert>2 digits from 20 to 99</f:alert>
+              </f:input>
+              <f:input ref="month">
+                <f:label>Month: </f:label>
+                <f:alert>2 digits from 1 to 12</f:alert>
+              </f:input>
+            </fieldset>
           </f:group>
-          <f:input ref="instance('i1')/notification/@cvdDataPresent">
-            <f:label>CVD Data</f:label>
-            <f:hint>Is CVD presence information available before transaction?</f:hint>
-          </f:input>
-          <f:group ref="cvdData">
-            <f:input ref="cvd">
-              <f:label>CVD: </f:label>
-              <f:alert>Must consist of 3 digits</f:alert>
-            </f:input>
-          </f:group>
+          <fieldset>
+            <legend>
+              <f:input ref="instance('i1')/notification/@cvdDataPresent">
+                <f:label>CVD Data</f:label>
+                <f:hint>Is CVD presence information available before transaction?</f:hint>
+              </f:input>
+            </legend>
+            <f:group ref="cvdData">
+              <f:input ref="cvd">
+                <f:label>CVD: </f:label>
+                <f:alert>Must consist of 3 digits</f:alert>
+              </f:input>
+            </f:group>
+          </fieldset>
         </f:group>
         <f:trigger>
           <f:label>Remove</f:label>
