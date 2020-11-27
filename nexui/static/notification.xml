@@ -169,7 +169,7 @@
             </f:group>
           </fieldset>
         </f:group>
-        <f:trigger>
+        <f:trigger appearance="minimal">
           <f:label>Remove</f:label>
           <f:action ev:event="DOMActivate">
             <f:delete nodeset="."/>
