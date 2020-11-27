@@ -103,7 +103,7 @@
     <f:repeat id="r1" nodeset="instance('i0')/events/*">
       <fieldset>
         <legend>
-          <f:output value="name()"/>
+          <f:output value="instance('i1')/notification[name(*[1]) = name(current())]/@label"/>
         </legend>
         <f:group ref=".[name() = 'languageSelection']">
           <f:select1 ref="language">
