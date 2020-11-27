@@ -55,6 +55,19 @@
         </serviceType>
       </f:instance>
       <f:instance src="iso639.xml" id="i3"/>
+      <f:instance xmlns="" id="i4">
+        <testPans>
+          <brand pan=""/>
+          <brand pan="4485936516057131">VISA</brand>
+          <brand pan="4917505187608015">VISA Electron</brand>
+          <brand pan="5144061495831024">MasterCard</brand>
+          <brand pan="5038218334590356">Maestro</brand>
+          <brand pan="6011978759425573">Discover</brand>
+          <brand pan="30588293701510">Diners Club</brand>
+          <brand pan="3537208456619863956">JCB</brand>
+          <brand pan="375493854861485">AmEx</brand>
+        </testPans>
+      </f:instance>
       <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean"/>
       <f:bind ref="instance('i0')/events/manualEntry/cvdData" relevant="instance('i1')/notification/@cvdDataPresent=true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000" required="true()"/>
@@ -120,28 +133,14 @@
           <f:input ref="pan">
             <f:label>PAN: </f:label>
             <f:alert>Must have correct Luhn checksum</f:alert>
-            <f:hint class="width-workaround">
-              <span>Test credit card numbers:</span>
-              <dl>
-                <dt>VISA</dt>
-                <dd>4485936516057131</dd>
-                <dt>VISA Electron</dt>
-                <dd>4917505187608015</dd>
-                <dt>MasterCard</dt>
-                <dd>5144061495831024</dd>
-                <dt>Maestro</dt>
-                <dd>5038218334590356</dd>
-                <dt>Discover</dt>
-                <dd>6011978759425573</dd>
-                <dt>Diners Club</dt>
-                <dd>30588293701510</dd>
-                <dt>JCB</dt>
-                <dd>3537208456619863956</dd>
-                <dt>AmEx</dt>
-                <dd>375493854861485</dd>
-              </dl>
-            </f:hint>
           </f:input>
+          <f:select1 ref="pan">
+            <f:label>or dummy value for: </f:label>
+            <f:itemset nodeset="instance('i4')/brand">
+              <f:label ref="."/>
+              <f:value ref="@pan"/>
+            </f:itemset>
+          </f:select1>
           <f:group ref="expirationDate">
             <f:label>Expitation Date</f:label>
             <f:input ref="year">
