@@ -104,6 +104,12 @@
       <fieldset>
         <legend>
           <f:output value="instance('i1')/notification[name(*[1]) = name(current())]/@label"/>
+          <f:trigger appearance="minimal">
+            <f:label class="remove-event">🗙</f:label>
+            <f:action ev:event="DOMActivate">
+              <f:delete nodeset="."/>
+            </f:action>
+          </f:trigger>
         </legend>
         <f:group ref=".[name() = 'languageSelection']">
           <f:select1 ref="language">
@@ -169,12 +175,6 @@
             </f:group>
           </fieldset>
         </f:group>
-        <f:trigger appearance="minimal">
-          <f:label>Remove</f:label>
-          <f:action ev:event="DOMActivate">
-            <f:delete nodeset="."/>
-          </f:action>
-        </f:trigger>
       </fieldset>
     </f:repeat>
   </body>
