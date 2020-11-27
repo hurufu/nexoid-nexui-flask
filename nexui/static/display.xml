@@ -29,6 +29,12 @@
     </xf:model>
   </head>
   <body>
+    <xf:trigger>
+      <xf:label>Clear</xf:label>
+      <xf:action ev:event="DOMActivate">
+        <xf:reset model="request_log_model"/>
+      </xf:action>
+    </xf:trigger>
     <table>
       <thead>
         <tr>
