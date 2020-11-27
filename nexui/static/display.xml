@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="xsltforms1.5/build/xsl/xsltforms.xsl" type="text/xsl"?>
-<?xsltforms-options debug="yes"?>
+<?xsltforms-options debug="no"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events">
   <head>
     <title>UI update report</title>
