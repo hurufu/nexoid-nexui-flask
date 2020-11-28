@@ -1,0 +1,13 @@
+/* Remove hint mark "𝐢" after label */
+.hint-is-tooltip xforms-hint-mark::after {
+    content: none;
+}
+
+.hint-is-tooltip xforms-hint {
+    visibility: hidden;
+    display: inline-block;
+}
+
+.hint-is-tooltip:hover xforms-hint {
+    visibility: visible;
+}

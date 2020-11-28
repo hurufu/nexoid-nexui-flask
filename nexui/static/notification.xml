@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <head>
     <title>SCAP Notification (aka Wait For Event)</title>
+    <link rel="stylesheet" href="notification.css"/>
     <f:model id="m1">
       <f:instance id="i0">
         <ScapiNotification xmlns="">
@@ -104,8 +105,9 @@
       <fieldset>
         <legend>
           <f:output value="instance('i1')/notification[name(*[1]) = name(current())]/@label"/>
-          <f:trigger appearance="minimal">
-            <f:label class="remove-event">🗙</f:label>
+          <f:trigger appearance="minimal" class="hint-is-tooltip">
+            <f:label>🗙</f:label>
+            <f:hint>Remove this event</f:hint>
             <f:action ev:event="DOMActivate">
               <f:delete nodeset="."/>
             </f:action>
