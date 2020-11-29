@@ -124,18 +124,13 @@
           <span> (<f:output value="language"/>)</span>
         </f:group>
         <f:group ref=".[name() = 'serviceSelection']">
-          <f:select1 ref="instance('i2')/@selected">
+          <f:select1 ref="serviceId">
             <f:label>Serivce Identifier: </f:label>
-            <f:itemset nodeset="../service">
+            <f:itemset nodeset="instance('i2')/service">
               <f:label ref="@label"/>
-              <f:value value="name(*[1])"/>
+              <f:copy ref="./*"/>
             </f:itemset>
           </f:select1>
-          <!-- FIXME: Workaround for bug in f:copy https://github.com/AlainCouthures/declarative4all/issues/2 -->
-          <f:action ev:event="xforms-value-changed">
-            <f:insert nodeset="instance('i0')/events/serviceSelection/serviceId/*[1]" origin="instance('i2')/service/*[name() = ../../@selected]"/>
-            <f:delete nodeset="instance('i0')/events/serviceSelection/serviceId/*[1]"/>
-          </f:action>
         </f:group>
         <f:group ref=".[name() = 'manualEntry']">
           <f:input ref="pan">
