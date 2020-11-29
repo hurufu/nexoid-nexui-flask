@@ -311,6 +311,18 @@ def map_nokreason(language, nok):
     }
     return mapping[nok][language]
 
+def map_cardholder_entry(language, msg):
+    '''map_cardholder_entry'''
+    mapping = {
+        'crdhldrEntCvdPresence': {
+            'en': 'Is CVD Present?',
+            'pl': 'Czy podano CVD?',
+            'fr': 'Le CVD est-il présent?',
+            'de': 'Ist CVD vorhanden?',
+        }
+    }
+    return mapping[msg][language]
+
 def map_output(language, out):
     '''map_output'''
     mapping = {
@@ -319,6 +331,20 @@ def map_output(language, out):
         'nokReason': map_nokreason,
     }
     return mapping[out[0]](language, out[1])
+
+def map_entry(language, entry):
+    '''map_entry'''
+    mapping = {
+        'msg': map_cardholder_entry
+    }
+    return mapping[entry[0]](language, entry[1])
+
+def convert_entry(api, payload):
+    '''convert_entry'''
+    return [{
+        'api': api,
+        'line': [ map_entry(payload['language'], what) for what in payload['what'] ]
+    }]
 
 def convert_output(api, payload):
     '''convert_output'''
@@ -355,6 +381,7 @@ def convert_to_request_log_event(msg):
     '''convert_to_request_log_event'''
     mapping = {
         'output': convert_output,
+        'entry': convert_entry,
         'updateInterfaces': convert_interfaces,
         'print': convert_print
     }
@@ -365,9 +392,19 @@ def tonexui(apdu):
     msg = asn.decode('ScapiRequest', apdu, check_constraints=True)
     return json.dumps(convert_to_request_log_event(msg))
 
+def convert_to_fat_ack_entry(msg):
+    '''convert_to_fat_ack_entry'''
+    # TODO: Design layout of UI response messages better then {'cvdPresence': {'cvdPresent': {}}}
+    key = list(msg.keys())[0]
+    data = list(msg[key].keys())[0]
+    return ('ackEntry', [(key, data)])
+
 def fromnexui(json_msg):
     '''fromnexui'''
     tmp = json.loads(json_msg)
     if 'ack' in tmp:
         return asn.encode('ScapiResponse', ('ack', None), check_constraints=True)
+    if 'ackEntry' in tmp:
+        entry = convert_to_fat_ack_entry(tmp['ackEntry'])
+        return asn.encode('ScapiResponse', entry, check_constraints=True)
     raise NotImplementedError
