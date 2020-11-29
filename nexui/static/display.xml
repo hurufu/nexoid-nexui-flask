@@ -20,11 +20,18 @@
         <display>
           <interface/>
           <line/>
+          <prompt/>
+          <cvdPresence selected="">
+            <cvd key="bypassed">Bypass CVD entry</cvd>
+            <cvd key="illegible">CVD illegible</cvd>
+            <cvd key="not_present">CVD not present</cvd>
+          </cvdPresence>
         </display>
       </xf:instance>
       <xf:instance xmlns="" id="response_instance">
         <response/>
       </xf:instance>
+      <xf:bind nodeset="instance('display_instance')/cvdPresence" relevant="instance('display_instance')/prompt='cvdPresence'"/>
       <xf:action ev:event="request_log_event">
         <xf:insert nodeset="instance('request_log_instance')/txt" at="1" position="before"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[1]/@api" value="event('api')"/>
@@ -32,6 +39,8 @@
         <xf:setvalue ref="instance('request_log_instance')/txt[1]" value="event('line')"/>
         <xf:setvalue ref="instance('display_instance')/line" value="event('line')" if="event('api')='output' or event('api')='entry'"/>
         <xf:setvalue ref="instance('display_instance')/interface" value="event('line')" if="event('api')='interface'"/>
+        <!-- FIXME: Implement proper entry -->
+        <xf:setvalue ref="instance('display_instance')/prompt" value="'cvdPresence'" if="event('api')='entry'"/>
       </xf:action>
       <xf:action ev:event="xforms-binding-exception">
         <xf:insert nodeset="instance('request_log_instance')/txt" at="1" position="before"/>
@@ -57,27 +66,20 @@
           <xf:output value="line"/>
         </dd>
       </dl>
-      <xf:trigger appearance="minimal">
-        <xf:label>&#x2705;</xf:label>
-        <xf:hint>CVD present</xf:hint>
-        <xf:load ev:event="DOMActivate">
-          <xf:resource value="'javascript:nexui_ack_cvdPresence(&quot;present&quot;)'"/>
-        </xf:load>
-      </xf:trigger>
-      <xf:trigger appearance="minimal">
-        <xf:label>&#x1F191;</xf:label>
-        <xf:hint>Bypass CVD entry</xf:hint>
-        <xf:load ev:event="DOMActivate">
-          <xf:resource value="'javascript:nexui_ack_cvdPresence(&quot;bypassed&quot;)'"/>
-        </xf:load>
-      </xf:trigger>
-      <xf:trigger appearance="minimal">
-        <xf:label>&#x274E;</xf:label>
-        <xf:hint>CVD not present</xf:hint>
-        <xf:load ev:event="DOMActivate">
-          <xf:resource value="'javascript:nexui_ack_cvdPresence(&quot;not_present&quot;)'"/>
-        </xf:load>
-      </xf:trigger>
+      <xf:select1 ref="cvdPresence/@selected" appearance="compact">
+        <xf:label>CVD Presence</xf:label>
+        <xf:itemset nodeset="../cvd">
+          <xf:label ref="."/>
+          <xf:value ref="@key"/>
+        </xf:itemset>
+        <xf:action ev:event="xforms-value-changed">
+          <xf:load if=".!=''">
+            <xf:resource value="concat('javascript:nexui_ack_cvdPresence(&quot;',.,'&quot;)')"/>
+          </xf:load>
+          <xf:setvalue ref="instance('display_instance')/cvdPresence/@selected"/>
+          <xf:setvalue ref="instance('display_instance')/prompt"/>
+        </xf:action>
+      </xf:select1>
     </xf:group>
     <table>
       <thead>
