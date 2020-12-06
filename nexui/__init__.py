@@ -10,13 +10,11 @@ from flask import (
 import click
 
 from timebudget import timebudget
-from . import blueprint_ui as ui
 from . import request_socket as rq
 from . import response_socket as rs
 from . import notification_socket as ns
 
 app = Flask(__name__, instance_relative_config=True)
-app.register_blueprint(ui.bp)
 
 @app.route('/nexo', methods=['GET'])
 def get_scap_notification_form():
@@ -29,7 +27,7 @@ def notify_scap():
     with ns.Socket(dial='ipc:///tmp/fatnt') as ntf:
         click.echo(request.data)
         ntf.send(request.data)
-    return redirect(url_for('static', filename='notification.xml'))
+    return redirect(url_for('static', filename='notification.xhtml'))
 
 @app.before_first_request
 def start_ui_server():
