@@ -57,11 +57,11 @@
     </xf:trigger>
     <xf:group ref="instance('display_instance')">
       <dl>
-        <dt>Interface</dt>
+        <dt>Terminal interfaces status:</dt>
         <dd>
           <xf:output value="interface"/>
         </dd>
-        <dt>Output</dt>
+        <dt>Terminal display output:</dt>
         <dd>
           <xf:output value="line"/>
         </dd>
@@ -82,6 +82,7 @@
       </xf:select1>
     </xf:group>
     <table>
+      <caption>Event log</caption>
       <thead>
         <tr>
           <th>Time</th>

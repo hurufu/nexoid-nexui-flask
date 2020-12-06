@@ -25,7 +25,7 @@
               </serviceId>
             </serviceSelection>
           </notification>
-          <notification label="Manual Entry" cvdDataPresent="false">
+          <notification label="Manual Entry" cvdDataPresent="true">
             <manualEntry>
               <pan/>
               <expirationDate>
@@ -69,7 +69,7 @@
           <brand pan="375493854861485">AmEx</brand>
         </testPans>
       </f:instance>
-      <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean"/>
+      <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean" readonly="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/cvdData" relevant="instance('i1')/notification/@cvdDataPresent=true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000" required="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
@@ -106,7 +106,7 @@
         <legend>
           <f:output value="instance('i1')/notification[name(*[1]) = name(current())]/@label"/>
           <f:trigger appearance="minimal" class="hint-is-tooltip">
-            <f:label>🗙</f:label>
+            <f:label>&#x1F5D9;</f:label>
             <f:hint>Remove this event</f:hint>
             <f:action ev:event="DOMActivate">
               <f:delete nodeset="."/>
@@ -159,9 +159,10 @@
           </f:group>
           <fieldset>
             <legend>
+              <span>CVD Data</span>
               <f:input ref="instance('i1')/notification/@cvdDataPresent">
-                <f:label>CVD Data</f:label>
                 <f:hint>Is CVD presence information available before transaction?</f:hint>
+                <f:help>CVD is always required in current release build</f:help>
               </f:input>
             </legend>
             <f:group ref="cvdData">
