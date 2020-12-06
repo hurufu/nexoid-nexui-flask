@@ -1,24 +1,36 @@
 '''Basic SCAP Application'''
 
-import response_socket as rs
-import request_socket as rq
+from contextlib import contextmanager
+from pynng import (Req0, Rep0)
 from scapi_message import (tonexui, fromnexui)
 
-def handle_scapi_requests():
-    '''Main request handling function'''
-    with rs.ResponseSocket(listen='ipc:///tmp/fatrq') as fat,\
-         rq.RequestSocket(dial='ipc:///tmp/nexui') as nexui:
-        def fat_recv():
+@contextmanager
+def request_socket(*args, **kwargs):
+    '''NNG Req0 context manager'''
+    socket = Req0(*args, **kwargs)
+    yield socket
+    socket.close()
+
+@contextmanager
+def response_socket(*args, **kwargs):
+    '''NNG Rep0 context manager'''
+    socket = Rep0(*args, **kwargs)
+    yield socket
+    socket.close()
+
+def main():
+    '''Main request forwarding loop'''
+    with response_socket(listen='ipc:///tmp/fatrq') as fat,\
+         request_socket(dial='ipc:///tmp/nexui') as nexui:
+        def exchange_messages():
             req = tonexui(fat.recv())
+            nexui.send(req.encode('UTF-8'))
             print('req: ' + req)
-            return req.encode('UTF-8')
-        def fat_send(rsp):
-            rsp_buf = fromnexui(rsp)
-            fat.send(rsp_buf)
-            print('rsp: ' + rsp_buf.decode(encoding='UTF-8'))
+            rsp = nexui.recv()
+            fat.send(fromnexui(rsp))
+            print('rsp: ' + rsp.decode('UTF-8'))
 
         while True:
-            nexui.send(fat_recv())
-            fat_send(nexui.recv())
+            exchange_messages()
 
-handle_scapi_requests()
+main()
