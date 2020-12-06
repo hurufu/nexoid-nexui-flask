@@ -71,7 +71,7 @@
       </f:instance>
       <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean" readonly="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/cvdData" relevant="instance('i1')/notification/@cvdDataPresent=true()"/>
-      <f:bind ref="instance('i0')/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000" required="true()"/>
+      <f:bind ref="instance('i0')/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000 and . &gt; 99" required="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/expirationDate/year" type="decimal" constraint=". &gt; 19 and . &lt; 100" required="true()"/>
       <f:bind ref="instance('i0')/events/manualEntry/expirationDate/month" type="decimal" constraint=". &lt; 13" required="true()"/>
