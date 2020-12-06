@@ -47,15 +47,7 @@ sock.on('data', function(msg) {
         return JSON.parse(dec.decode(msg.slice(4, msg.byteLength)));
     }
     last_msg = msg;
-
-    var isResponseImmidiate = true;
     get_payload().forEach(function(e) {
         xf_fireEvent("request_log_model", "request_log_event", {api: e.api, line: String(e.line)});
-        if (e.api === 'entry') {
-            isResponseImmidiate = false;
-        }
     });
-    if (isResponseImmidiate) {
-        nexui_ack();
-    }
 });
