@@ -1,5 +1,7 @@
 '''NEXUI - Demo UI for nexo-in-the-cloud'''
 import threading
+import subprocess
+from time import sleep
 
 from flask import (
     Flask,
@@ -45,6 +47,10 @@ def start_ui_server():
                     rsp = browser.recv()
                 nexui.send(rsp)
 
+    def run_external_program(**kwargs):
+        while True:
+            subprocess.run(kwargs['prog'], check=False)
+
     thread_params = {
         'target': forward_ui_requests,
         'name': 'reqfrwdr',
@@ -60,6 +66,7 @@ def start_ui_server():
         }
     }
     threading.Thread(**thread_params).start()
+    sleep(3)
 
     scap4nexui_thread_params = {
         'target': scap4nexui.main,
@@ -67,3 +74,14 @@ def start_ui_server():
         'daemon': True
     }
     threading.Thread(**scap4nexui_thread_params).start()
+    sleep(3)
+
+    nexoid_thread_params = {
+        'target': run_external_program,
+        'name': 'nexoid_runner',
+        'daemon': True,
+        'kwargs': {
+            'prog': ['nexoid-cpp'],
+        }
+    }
+    threading.Thread(**nexoid_thread_params).start()
