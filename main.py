@@ -33,4 +33,5 @@ def main():
         while True:
             exchange_messages()
 
-main()
+if __name__ == '__main__':
+    main()
