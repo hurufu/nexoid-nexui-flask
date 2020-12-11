@@ -1,9 +1,9 @@
 '''ASN.1'''
-import json
 from bitstring import BitArray
 import asn1tools
 
 asn = asn1tools.compile_files('Scapi.asn1', 'xer')
+asn_nexui = asn1tools.compile_files(['Scapi.asn1', 'Nexui.asn1'], 'jer')
 
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
@@ -374,7 +374,7 @@ def convert_print(api, payload):
     '''convert_print'''
     return [{
         'api': api,
-        'line': payload['type']
+        'line': [payload['type']]
     }]
 
 def convert_to_request_log_event(msg):
@@ -385,26 +385,19 @@ def convert_to_request_log_event(msg):
         'updateInterfaces': convert_interfaces,
         'print': convert_print
     }
-    return mapping[msg[0]](msg[0], msg[1])
+    return {
+        'source': {
+            'type': 'scap'
+        },
+        'payload': mapping[msg[0]](msg[0], msg[1])
+    }
 
 def tonexui(apdu):
     '''tonexui'''
     msg = asn.decode('ScapiRequest', apdu, check_constraints=True)
-    return json.dumps(convert_to_request_log_event(msg))
-
-def convert_to_fat_ack_entry(msg):
-    '''convert_to_fat_ack_entry'''
-    # TODO: Design layout of UI response messages better then {'cvdPresence': {'cvdPresent': {}}}
-    key = list(msg.keys())[0]
-    data = list(msg[key].keys())[0]
-    return ('ackEntry', [(key, data)])
+    return asn_nexui.encode('UiRequest', convert_to_request_log_event(msg), check_constraints=True)
 
 def fromnexui(json_msg):
     '''fromnexui'''
-    tmp = json.loads(json_msg)
-    if 'ack' in tmp:
-        return asn.encode('ScapiResponse', ('ack', None), check_constraints=True)
-    if 'ackEntry' in tmp:
-        entry = convert_to_fat_ack_entry(tmp['ackEntry'])
-        return asn.encode('ScapiResponse', entry, check_constraints=True)
-    raise NotImplementedError
+    msg = asn_nexui.decode('UiResponse', json_msg, check_constraints=True)
+    return asn.encode('ScapiResponse', msg, check_constraints=True)

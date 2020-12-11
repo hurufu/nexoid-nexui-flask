@@ -24,8 +24,8 @@ def main():
          request_socket(dial='ipc:///tmp/nexui') as nexui:
         def exchange_messages():
             req = tonexui(fat.recv())
-            nexui.send(req.encode('UTF-8'))
-            print('req: ' + req)
+            nexui.send(req)
+            print('req: ' + req.decode('UTF-8'))
             rsp = nexui.recv()
             fat.send(fromnexui(rsp))
             print('rsp: ' + rsp.decode('UTF-8'))

@@ -1,0 +1,41 @@
+Nexui
+
+DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+    IMPORTS
+        ScapiResponse,
+        ScapiCardholderMesage
+    FROM Scapi;
+
+    UiRequest ::= SEQUENCE {
+        source SourceIdentification,
+        payload SEQUENCE OF SEQUENCE {
+            api ApiType,
+            line SEQUENCE OF UTF8String,
+            cardholderMessage SEQUENCE OF ScapiCardholderMesage OPTIONAL
+        }
+    }
+
+    UiResponse ::= ScapiResponse
+
+    ApiType ::= ENUMERATED {
+        output,
+        entry,
+        ssn,
+        interface,
+        print
+    }
+
+    SourceIdentification ::= SEQUENCE {
+        type RegisteredSourceType OPTIONAL,
+        ...
+    }
+
+    RegisteredSourceType ::= ENUMERATED {
+        scap,
+        pap,
+        hap,
+        tmap
+    }
+
+ END
