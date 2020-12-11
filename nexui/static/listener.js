@@ -25,7 +25,7 @@ function nexui_send(obj) {
 }
 
 function nexui_ack() {
-    nexui_send({ack: {}});
+    nexui_send({ack: null});
 }
 
 function nexui_ack_cvdPresence(presence) {
@@ -47,7 +47,8 @@ sock.on('data', function(msg) {
         return JSON.parse(dec.decode(msg.slice(4, msg.byteLength)));
     }
     last_msg = msg;
-    get_payload().forEach(function(e) {
-        xf_fireEvent("request_log_model", "request_log_event", {api: e.api, line: String(e.line)});
+    var req = get_payload();
+    req.payload.forEach(function(e) {
+        xf_fireEvent("request_log_model", "request_log_event", {source: req.source.type, api: e.api, line: String(e.line)});
     });
 });

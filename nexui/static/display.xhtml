@@ -13,7 +13,7 @@
     <xf:model id="request_log_model">
       <xf:instance xmlns="" id="request_log_instance">
         <logs>
-          <txt received_at="" api=""/>
+          <txt received_at="" api="" source=""/>
         </logs>
       </xf:instance>
       <xf:instance xmlns="" id="display_instance">
@@ -35,6 +35,7 @@
       <xf:action ev:event="request_log_event">
         <xf:insert nodeset="instance('request_log_instance')/txt" at="1" position="before"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[1]/@api" value="event('api')"/>
+        <xf:setvalue ref="instance('request_log_instance')/txt[1]/@source" value="event('source')"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[1]/@received_at" value="local-dateTime()"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[1]" value="event('line')"/>
         <xf:setvalue ref="instance('display_instance')/line" value="event('line')" if="event('api')='output' or event('api')='entry'"/>
@@ -89,6 +90,7 @@
       <thead>
         <tr>
           <th>Time</th>
+          <th>Source</th>
           <th>Type</th>
           <th>Data</th>
         </tr>
@@ -100,6 +102,9 @@
               <time>
                 <xf:output value="substring(@received_at, 12, 8)"/>
               </time>
+            </td>
+            <td>
+              <xf:output ref="@source"/>
             </td>
             <td>
               <xf:output ref="@api"/>
