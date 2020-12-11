@@ -13,6 +13,7 @@ from timebudget import timebudget
 from . import request_socket as rq
 from . import response_socket as rs
 from . import notification_socket as ns
+from . import scap4nexui
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -59,3 +60,10 @@ def start_ui_server():
         }
     }
     threading.Thread(**thread_params).start()
+
+    scap4nexui_thread_params = {
+        'target': scap4nexui.main,
+        'name': 'scap4nexui',
+        'daemon': True
+    }
+    threading.Thread(**scap4nexui_thread_params).start()

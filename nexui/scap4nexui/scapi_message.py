@@ -1,9 +1,14 @@
 '''ASN.1'''
+import os
+
 from bitstring import BitArray
 import asn1tools
 
-asn = asn1tools.compile_files('Scapi.asn1', 'xer')
-asn_nexui = asn1tools.compile_files(['Scapi.asn1', 'Nexui.asn1'], 'jer')
+ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'Scapi.asn1')
+ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'Nexui.asn1')
+
+asn = asn1tools.compile_files(ASN_SCAPI_MODULE_PATH, 'xer')
+asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
 
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''

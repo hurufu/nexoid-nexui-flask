@@ -2,7 +2,7 @@
 
 from contextlib import contextmanager
 from pynng import (Req0, Rep0)
-from scapi_message import (tonexui, fromnexui)
+from . import scapi_message as sm
 
 @contextmanager
 def request_socket(*args, **kwargs):
@@ -23,11 +23,11 @@ def main():
     with response_socket(listen='ipc:///tmp/fatrq') as fat,\
          request_socket(dial='ipc:///tmp/nexui') as nexui:
         def exchange_messages():
-            req = tonexui(fat.recv())
+            req = sm.tonexui(fat.recv())
             nexui.send(req)
             print('req: ' + req.decode('UTF-8'))
             rsp = nexui.recv()
-            fat.send(fromnexui(rsp))
+            fat.send(sm.fromnexui(rsp))
             print('rsp: ' + rsp.decode('UTF-8'))
 
         while True:
