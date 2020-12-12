@@ -29,17 +29,7 @@ function nexui_ack() {
 }
 
 function nexui_ack_cvdPresence(presence) {
-    function map_cvdPresence() {
-        switch (presence) {
-            case 'present': return {cvdPresent: {}};
-            case 'bypassed': return {cvdEntryBypassed: {}};
-            case 'illegible': return {cvdIllegible: {}};
-            case 'not_present': return {cvdNotPresent: {}};
-            default:
-                throw 'Incorrect CVD Presence indicator' + presence;
-        }
-    }
-    nexui_send({ackEntry: {cvdPresence: map_cvdPresence()}});
+    nexui_send({ackEntry: [{cvdPresence: presence}]});
 }
 
 sock.on('data', function(msg) {
