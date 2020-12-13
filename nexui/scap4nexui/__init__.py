@@ -1,6 +1,7 @@
 '''Basic SCAP Application'''
 
 from contextlib import contextmanager
+from datetime import datetime as dt
 from pynng import (Req0, Rep0)
 from . import scapi_message as sm
 
@@ -25,10 +26,10 @@ def main():
         def exchange_messages():
             req = sm.tonexui(fat.recv())
             nexui.send(req)
-            print('req: ' + req.decode('UTF-8'))
+            print(dt.now(), ' req: ' + req.decode('UTF-8'))
             rsp = nexui.recv()
             fat.send(sm.fromnexui(rsp))
-            print('rsp: ' + rsp.decode('UTF-8'))
+            print(dt.now(), ' rsp: ' + rsp.decode('UTF-8'))
 
         while True:
             exchange_messages()
