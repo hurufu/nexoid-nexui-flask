@@ -1,5 +1,5 @@
 var sock = new Socket({
-    protocol: 'req.sp.nanomsg.org',
+    protocol: 'surveyor.sp.nanomsg.org',
     debug: false,
     sendArrayBuffer: true,
     receiveArrayBuffer: true,

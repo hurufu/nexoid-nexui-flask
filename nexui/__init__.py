@@ -2,6 +2,7 @@
 import threading
 import subprocess
 from time import sleep
+from contextlib import contextmanager
 
 from flask import (
     Flask,
@@ -11,11 +12,18 @@ from flask import (
 )
 import click
 
+from pynng import Surveyor0
 from timebudget import timebudget
-from . import request_socket as rq
 from . import response_socket as rs
 from . import notification_socket as ns
 from . import scap4nexui
+
+@contextmanager
+def survey_socket(*args, **kwargs):
+    '''NNG Surveyor0 context manager'''
+    socket = Surveyor0(*args, **kwargs)
+    yield socket
+    socket.close()
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -39,7 +47,8 @@ def start_ui_server():
     def forward_ui_requests(**kwargs):
         '''Blindly forwards all UI requests to a web browser'''
         with rs.Socket(**kwargs['nexui']) as nexui,\
-             rq.Socket(**kwargs['browser']) as browser:
+             survey_socket(**kwargs['browser']) as browser:
+            sleep(10)
             while True:
                 req = nexui.recv()
                 with timebudget("Browser roundtrip", quiet=kwargs['quiet_time']):
@@ -57,7 +66,8 @@ def start_ui_server():
         'daemon': True,
         'kwargs': {
             'browser': {
-                'listen': 'ws://*:51004'
+                'listen': 'ws://*:51004',
+                'survey_time': 1 * 60 * 1000
             },
             'nexui': {
                 'listen': 'ipc:///tmp/nexui'
