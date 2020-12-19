@@ -3,6 +3,7 @@ import threading
 import subprocess
 from time import sleep
 from contextlib import contextmanager
+from traceback import print_exc
 
 from flask import (
     Flask,
@@ -12,7 +13,7 @@ from flask import (
 )
 import click
 
-from pynng import Surveyor0
+import pynng
 from timebudget import timebudget
 from . import response_socket as rs
 from . import notification_socket as ns
@@ -21,7 +22,7 @@ from . import scap4nexui
 @contextmanager
 def survey_socket(*args, **kwargs):
     '''NNG Surveyor0 context manager'''
-    socket = Surveyor0(*args, **kwargs)
+    socket = pynng.Surveyor0(*args, **kwargs)
     yield socket
     socket.close()
 
@@ -50,11 +51,14 @@ def start_ui_server():
              survey_socket(**kwargs['browser']) as browser:
             sleep(10)
             while True:
-                req = nexui.recv()
-                with timebudget("Browser roundtrip", quiet=kwargs['quiet_time']):
-                    browser.send(req)
-                    rsp = browser.recv()
-                nexui.send(rsp)
+                try:
+                    req = nexui.recv()
+                    with timebudget("Browser roundtrip", quiet=kwargs['quiet_time']):
+                        browser.send(req)
+                        rsp = browser.recv()
+                    nexui.send(rsp)
+                except pynng.exceptions.Timeout:
+                    print_exc()
 
     def run_external_program(**kwargs):
         while True:
