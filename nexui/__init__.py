@@ -65,6 +65,7 @@ def start_ui_server():
         sleep(22)
         while True:
             subprocess.run(kwargs['prog'], check=False)
+            sleep(2)
 
     def run_scap4nexui():
         sleep(17)
