@@ -47,9 +47,10 @@ def start_ui_server():
 
     def forward_ui_requests(**kwargs):
         '''Blindly forwards all UI requests to a web browser'''
+        sleep(15)
         with rs.Socket(**kwargs['nexui']) as nexui,\
              survey_socket(**kwargs['browser']) as browser:
-            sleep(10)
+            sleep(2)
             while True:
                 try:
                     req = nexui.recv()
@@ -61,8 +62,13 @@ def start_ui_server():
                     print_exc()
 
     def run_external_program(**kwargs):
+        sleep(22)
         while True:
             subprocess.run(kwargs['prog'], check=False)
+
+    def run_scap4nexui():
+        sleep(17)
+        return scap4nexui.main()
 
     thread_params = {
         'target': forward_ui_requests,
@@ -80,15 +86,13 @@ def start_ui_server():
         }
     }
     threading.Thread(**thread_params).start()
-    sleep(3)
 
     scap4nexui_thread_params = {
-        'target': scap4nexui.main,
+        'target': run_scap4nexui,
         'name': 'scap4nexui',
         'daemon': True
     }
     threading.Thread(**scap4nexui_thread_params).start()
-    sleep(3)
 
     nexoid_thread_params = {
         'target': run_external_program,
@@ -99,3 +103,5 @@ def start_ui_server():
         }
     }
     threading.Thread(**nexoid_thread_params).start()
+
+    sleep(15)
