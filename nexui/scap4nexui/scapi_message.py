@@ -12,6 +12,9 @@ asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PAT
 
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
+    icon_please_wait = '⏳	'
+    icon_approved = '✔️	'
+    icon_aborted = '🚫	'
     mapping = {
         'crdhldrMsgWelcome': {
             'en': 'Welcome',
@@ -20,22 +23,16 @@ def map_cardholder_message(language, msg):
             'de': 'Willkommen'
         },
         'crdhldrEmvPleaseWait': {
-            'en': 'Please Wait...',
-            'pl': 'Proszę czekać...',
-            'fr': "S'il vous plaît, attendez...",
-            'de': 'Warten Sie mal...'
+            'en': icon_please_wait + 'Please Wait...',
+            'pl': icon_please_wait + 'Proszę czekać...',
+            'fr': icon_please_wait + "S'il vous plaît, attendez...",
+            'de': icon_please_wait + 'Warten Sie mal...'
         },
         'crdhldrEmvApproved': {
-            'en': 'Approved.',
-            'pl': 'Zgoda.',
-            'fr': 'Approuvée',
-            'de': 'Genehmigt'
-        },
-        'rdhldrMsgTransactionAborted': {
-            'en': 'Transaction Aborted!',
-            'pl': 'Transakcja przerwana!',
-            'fr': 'Transaction abandonnée!',
-            'de': 'Transaktion abgebrochen!'
+            'en': icon_approved + 'Approved.',
+            'pl': icon_approved + 'Zgoda.',
+            'fr': icon_approved + 'Approuvée',
+            'de': icon_approved + 'Genehmigt'
         },
         'crdhldrMsgReceiptPrintingFailed': {
             'en': 'Receipt printing failed!',
@@ -44,10 +41,10 @@ def map_cardholder_message(language, msg):
             'de': 'Belegdruck fehlgeschlagen!',
         },
         'crdhldrMsgTransactionAborted': {
-            'en': 'Transaction Aborted',
-            'pl': 'Transakcję przerwano',
-            'fr': 'Transaction annulée',
-            'de': 'Transaktion abgebrochen',
+            'en': icon_aborted + 'Transaction Aborted',
+            'pl': icon_aborted + 'Transakcję przerwano',
+            'fr': icon_aborted + 'Transaction annulée',
+            'de': icon_aborted + 'Transaktion abgebrochen',
         }
     }
     return mapping[msg][language]
