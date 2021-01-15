@@ -6,6 +6,7 @@ from logging import (
     info,
     debug,
     warning,
+    error,
 )
 from time import sleep
 from contextlib import contextmanager
@@ -108,6 +109,7 @@ def start_ui_server():
                     nexui.send(rsp)
                     debug(f"UI response {rsp}")
                 except pynng.exceptions.Timeout:
+                    error('Timeout exception suppressed')
                     print_exc()
 
     def run_external_program(**kwargs):
