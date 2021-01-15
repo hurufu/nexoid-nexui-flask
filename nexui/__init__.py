@@ -63,14 +63,11 @@ def local_ui_requests_gatherer(*args, name='ui_gatherer', **kwargs):
     info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
     socket.close()
 
-@contextmanager
 def notification_socket(*args, name='fat_notifier', **kwargs):
     '''Creates a socket for FAT notifications'''
     socket = pynng.Push0(*args, **kwargs)
     info(f"{socket.protocol_name} '{name}' dialed to {kwargs['dial']}")
-    yield socket
-    info(f"{socket.protocol_name} '{name}' dropped connection to {kwargs['dial']}")
-    socket.close()
+    return socket
 
 app = Flask(__name__, instance_relative_config=True)
 
@@ -81,11 +78,15 @@ def get_scap_notification_form():
 
 @app.route('/nexo', methods=['POST'])
 def notify_scap():
-    '''Forward SCAPI notifications directly to the FAT'''
-    with notification_socket(dial='ipc:///tmp/fatnt') as ntf:
-        debug(f"Notify SCAP s:/tmp/fatnt n:{ntf.name} p:{ntf.peer_name} {str(request.data)}")
-        ntf.send(request.data)
+    '''Forward SCAPI notifications directly to FAT'''
+    if notify_scap.ntf is None:
+        # Figure out a way to cleanly shutdown SCAP notification socket
+        notify_scap.ntf = notification_socket(dial='ipc:///tmp/fatnt')
+    notify_scap.ntf.send(request.data)
+    debug(f"Sent SCAP notification {request.data}")
     return redirect(url_for('static', filename='notification.xhtml'))
+
+notify_scap.ntf = None
 
 @app.before_first_request
 def start_ui_server():
