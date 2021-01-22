@@ -1,1 +1,2 @@
-recursive-include *
+graft nexui/static
+recursive-include nexui/scap4nexui *.asn1
