@@ -8,6 +8,7 @@ setuptools.setup(
     author_email="huruf@gmail.com",
     description="Nexo-in-the-cloud demo",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Development Status :: 1 - Planning",
         "Programming Language :: Python :: 3",
