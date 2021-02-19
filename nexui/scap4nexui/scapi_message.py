@@ -4,8 +4,8 @@ import os
 from bitstring import BitArray
 import asn1tools
 
-ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'Scapi.asn1')
-ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'Nexui.asn1')
+ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Scapi.asn1')
+ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Nexui.asn1')
 
 asn = asn1tools.compile_files(ASN_SCAPI_MODULE_PATH, 'xer')
 asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
