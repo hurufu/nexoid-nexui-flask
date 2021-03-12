@@ -5,9 +5,10 @@ from bitstring import BitArray
 import asn1tools
 
 ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Scapi.asn1')
+ASN_SCNNG_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/ScapiNngClient.asn1')
 ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Nexui.asn1')
 
-asn = asn1tools.compile_files(ASN_SCAPI_MODULE_PATH, 'xer')
+asn = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_SCNNG_MODULE_PATH], 'xer')
 asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
 
 def map_cardholder_message(language, msg):
@@ -396,10 +397,18 @@ def convert_to_request_log_event(msg):
 
 def tonexui(apdu):
     '''tonexui'''
-    msg = asn.decode('ScapiRequest', apdu, check_constraints=True)
-    return asn_nexui.encode('UiRequest', convert_to_request_log_event(msg), check_constraints=True)
+    msg = asn.decode('ScapiNngRequest', apdu, check_constraints=True)
+    ui_msg = convert_to_request_log_event(msg['req'])
+    return asn_nexui.encode('UiRequest', ui_msg, check_constraints=True)
 
 def fromnexui(json_msg):
     '''fromnexui'''
+    fromnexui.msg_counter += fromnexui.msg_counter + 1
     msg = asn_nexui.decode('UiResponse', json_msg, check_constraints=True)
-    return asn.encode('ScapiResponse', msg, check_constraints=True)
+    nng_msg = {
+        'rsp': msg,
+        'id': fromnexui.msg_counter,
+    }
+    return asn.encode('ScapiNngResponse', nng_msg, check_constraints=True)
+
+fromnexui.msg_counter = 0
