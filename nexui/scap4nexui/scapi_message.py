@@ -1,5 +1,6 @@
 '''ASN.1'''
 import os
+import threading
 
 from bitstring import BitArray
 import asn1tools
@@ -10,6 +11,25 @@ ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Nexui.asn1
 
 asn = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_SCNNG_MODULE_PATH], 'xer')
 asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
+
+class Counter:
+    '''The simplest possible thread-safe counter'''
+    def __init__(self, start):
+        self.value = start
+        self._lock = threading.Lock()
+
+    def pre_incr(self):
+        '''Increment counter and return new value'''
+        with self._lock:
+            self.value += 1
+            return self.value
+
+    def post_incr(self):
+        '''Increment counter and return previous value'''
+        with self._lock:
+            ret = self.value
+            self.value -= 1
+            return ret
 
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
@@ -418,12 +438,11 @@ def tonexui(apdu):
 
 def fromnexui(json_msg):
     '''fromnexui'''
-    fromnexui.msg_counter += fromnexui.msg_counter + 1
     msg = asn_nexui.decode('UiResponse', json_msg, check_constraints=True)
     nng_msg = {
         'rsp': msg,
-        'id': fromnexui.msg_counter,
+        'id': fromnexui.msg_counter.pre_incr(),
     }
     return asn.encode('ScapiNngResponse', nng_msg, check_constraints=True)
 
-fromnexui.msg_counter = 0
+fromnexui.msg_counter = Counter(0)
