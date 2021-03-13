@@ -40,6 +40,15 @@
               </cvdData>
             </manualEntry>
           </notification>
+          <notification label="Amount Entry">
+            <amountEntry>
+              <totalAmount>0</totalAmount>
+              <supplementaryAmount>
+                <amount>0</amount>
+              </supplementaryAmount>
+              <cashbackAmount>0</cashbackAmount>
+            </amountEntry>
+          </notification>
         </notificationPrototype>
       </f:instance>
       <f:instance xmlns="" id="i2">
@@ -78,6 +87,9 @@
       <f:bind ref="instance('i0')/ntf/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/year" type="decimal" constraint=". &gt; 19 and . &lt; 100" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/month" type="decimal" constraint=". &lt; 13" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/totalAmount" type="decimal" constraint=". &lt; power(10, 12)-1" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/supplementaryAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/cashbackAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
       <f:submission id="s1" method="post" replace="all" resource="../nexo">
         <f:message level="modeless" ev:event="xforms-submit-error">Submit error</f:message>
       </f:submission>
@@ -175,6 +187,21 @@
               </f:input>
             </f:group>
           </fieldset>
+        </f:group>
+        <f:group ref=".[name() = 'amountEntry']">
+          <div>Setting any amount to 0 has the same effect as not sending it at all.</div>
+          <f:input ref="totalAmount">
+            <f:label>Amount: </f:label>
+            <f:alert>Any amount can't exceed 10¹²-1</f:alert>
+          </f:input>
+          <f:input ref="supplementaryAmount/amount">
+            <f:label>Supplementary amount (tip/gratuity): </f:label>
+            <f:alert>Any amount can't exceed 10¹²-1</f:alert>
+          </f:input>
+          <f:input ref="cashbackAmount">
+            <f:label>Cashback: </f:label>
+            <f:alert>Any amount can't exceed 10¹²-1</f:alert>
+          </f:input>
         </f:group>
       </fieldset>
     </f:repeat>

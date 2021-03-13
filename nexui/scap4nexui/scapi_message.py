@@ -326,12 +326,27 @@ def map_cardholder_entry(language, msg):
     }
     return mapping[msg][language]
 
+def map_trx_amount(language, msg):
+    '''map_trxAmount'''
+    def decimal_separator():
+        if language == 'pl':
+            return ','
+        return '.'
+
+    return str(msg // 100) + decimal_separator() + str(msg % 100)
+
+def map_trx_currency_code_alpha3(_, msg):
+    '''map_trx_currency_code_alpha3'''
+    return msg
+
 def map_output(language, out):
     '''map_output'''
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
         'nokReason': map_nokreason,
+        'trxAmount': map_trx_amount,
+        'trxCurrencyAlpha3': map_trx_currency_code_alpha3,
     }
     return mapping[out[0]](language, out[1])
 
