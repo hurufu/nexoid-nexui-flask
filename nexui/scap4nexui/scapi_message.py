@@ -4,6 +4,7 @@ import threading
 
 from bitstring import BitArray
 import asn1tools
+from babel.numbers import format_currency
 
 ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Scapi.asn1')
 ASN_SCNNG_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/ScapiNngClient.asn1')
@@ -346,27 +347,13 @@ def map_cardholder_entry(language, msg):
     }
     return mapping[msg][language]
 
-def map_trx_amount(language, msg):
-    '''map_trxAmount'''
-    def decimal_separator():
-        if language == 'pl':
-            return ','
-        return '.'
-
-    return str(msg // 100) + decimal_separator() + str(msg % 100)
-
-def map_trx_currency_code_alpha3(_, msg):
-    '''map_trx_currency_code_alpha3'''
-    return msg
-
 def map_output(language, out):
     '''map_output'''
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
         'nokReason': map_nokreason,
-        'trxAmount': map_trx_amount,
-        'trxCurrencyAlpha3': map_trx_currency_code_alpha3,
+        'formattedTrxAmount': lambda lang, out : out
     }
     return mapping[out[0]](language, out[1])
 
@@ -401,6 +388,55 @@ def convert_output(api, payload):
         ret.append({'api': api, 'line': crd})
     return ret
 
+def format_trx_amount(language, amount_data):
+    '''Formats amount according to received language and currency specifiers'''
+    def get_locale():
+        mapping = {
+            'en': 'en_GB',
+            'pl': 'pl_PL',
+            'fr': 'fr_FR',
+            'de': 'de_DE',
+        }
+        return mapping[language]
+
+    amount = amount_data['trxAmount'] / amount_data['trxCurrencyExponent']
+    currency = amount_data['trxCurrencyAlpha3']
+    formatted_amount = format_currency(amount, currency, locale=get_locale())
+    return ('formattedTrxAmount', formatted_amount)
+
+def convert_output_filter(api, payload):
+    '''convert_output_filter
+    Refactor this function! It's ugly AF
+    '''
+    def contains_trx_amount(payload_element):
+        parts = ['trxAmount', 'trxCurrencyAlpha3', 'trxCurrencyExponent']
+        return any(payload_element == x for x in parts)
+
+    language = payload['language']
+    filtered = list((n[0], n[1]) for n in payload['what'] if not contains_trx_amount(n[0]))
+
+    amount_data = {}
+    amount_flag = 0
+    for what in payload['what']:
+        if what[0] == 'trxAmount':
+            amount_data['trxAmount'] = what[1]
+            amount_flag |= 1
+        elif what[0] == 'trxCurrencyAlpha3':
+            amount_data['trxCurrencyAlpha3'] = what[1]
+            amount_flag |= 2
+        elif what[0] == 'trxCurrencyExponent':
+            amount_data['trxCurrencyExponent'] = what[1]
+            amount_flag |= 4
+
+    if amount_data:
+        if amount_flag == 7:
+            filtered.append(format_trx_amount(language, amount_data))
+        else:
+            filtered.append(('formattedTrxAmount', 'Not enough data to format amount'))
+
+    payload['what'] = filtered
+    return convert_output(api, payload)
+
 def convert_interfaces(_, payload):
     '''convert_interfaces'''
     return [{
@@ -417,8 +453,9 @@ def convert_print(api, payload):
 
 def convert_to_request_log_event(msg):
     '''convert_to_request_log_event'''
+    print(msg)
     mapping = {
-        'output': convert_output,
+        'output': convert_output_filter,
         'entry': convert_entry,
         'updateInterfaces': convert_interfaces,
         'print': convert_print
