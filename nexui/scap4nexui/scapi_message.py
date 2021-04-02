@@ -399,7 +399,7 @@ def format_trx_amount(language, amount_data):
         }
         return mapping[language]
 
-    amount = amount_data['trxAmount'] / amount_data['trxCurrencyExponent']
+    amount = amount_data['trxAmount'] / 10 ** amount_data['trxCurrencyExponent']
     currency = amount_data['trxCurrencyAlpha3']
     formatted_amount = format_currency(amount, currency, locale=get_locale())
     return ('formattedTrxAmount', formatted_amount)
