@@ -196,17 +196,31 @@
         </f:group>
       </f:group>
       <f:group id="controls">
-        <f:trigger>
-          <f:label>🔚 Again</f:label>
-          <f:action ev:event="DOMActivate">
-            <f:reset model="m1"/>
-            <f:rebuild/>
-            <f:reset model="request_log_model"/>
-          </f:action>
-        </f:trigger>
-        <f:submit submission="s1">
-          <f:label>💳 Pay</f:label>
-        </f:submit>
+        <f:group ref="manualEntry">
+          <f:trigger>
+            <f:label>🆑 Clear</f:label>
+            <f:action ev:event="DOMActivate">
+              <f:reset model="m1"/>
+              <f:rebuild/>
+              <f:reset model="request_log_model"/>
+            </f:action>
+          </f:trigger>
+        </f:group>
+        <f:group model="request_log_model" ref="instance('i_scap_requests')/records/req/text()">
+          <f:trigger>
+            <f:label>🔚 Again</f:label>
+            <f:action ev:event="DOMActivate">
+              <f:reset model="request_log_model"/>
+              <f:rebuild/>
+              <f:reset model="m1"/>
+            </f:action>
+          </f:trigger>
+        </f:group>
+        <f:group ref="manualEntry">
+          <f:submit submission="s1">
+            <f:label>💳 Pay</f:label>
+          </f:submit>
+        </f:group>
       </f:group>
     </f:group>
     <hr/>
