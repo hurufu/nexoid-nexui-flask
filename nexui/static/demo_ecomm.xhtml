@@ -5,6 +5,11 @@
   <head>
     <title>eCommerce demo (card not present)</title>
     <link rel="stylesheet" href="demo_ecomm.css"/>
+    <script>module = {}; // Silence the warning in nanomsg-browser</script>
+    <script src="https://cdn.jsdelivr.net/npm/nanomsg-browser@0.2.0/dist/nanomsg.min.js"/>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"/>
+    <script src="xforms-utils.js"/>
+    <script src="listener.js"> </script>
     <f:model id="m1">
       <f:instance id="i0">
         <ScapiNngNotification xmlns="">
@@ -66,6 +71,32 @@
         </f:action>
       </f:submission>
     </f:model>
+    <f:model id="request_log_model">
+      <f:instance id="i_scap_requests">
+        <ScapRequests xmlns="">
+          <records relevant="false">
+            <req received_at="" api="" source=""/>
+          </records>
+        </ScapRequests>
+      </f:instance>
+      <f:bind ref="instance('i_scap_requests')/records/@relevant" type="boolean"/>
+      <f:bind ref="instance('i_scap_requests')/records" relevant="@relevant=true()"/>
+      <f:action ev:event="request_log_event">
+        <f:setvalue ref="instance('i_scap_requests')/records/@relevant" value="true()"/>
+        <f:insert nodeset="instance('i_scap_requests')/records/req" at="1" position="before"/>
+        <f:setvalue ref="instance('i_scap_requests')/records/req[1]/@api" value="event('api')"/>
+        <f:setvalue ref="instance('i_scap_requests')/records/req[1]/@source" value="event('source')"/>
+        <f:setvalue ref="instance('i_scap_requests')/records/req[1]/@received_at" value="local-dateTime()"/>
+        <f:setvalue ref="instance('i_scap_requests')/records/req[1]" value="event('line')"/>
+        <f:load if="event('api') != 'entry'">
+          <f:resource value="'javascript:nexui_ack()'"/>
+        </f:load>
+      </f:action>
+      <f:action ev:event="xforms-binding-exception">
+        <f:insert nodeset="instance('i_scap_requests')/records/req" at="1" position="before"/>
+        <f:setvalue ref="instance('i_scap_requests')/records/req[1]" value="event('type')"/>
+      </f:action>
+    </f:model>
   </head>
   <body>
     <ul id="header">
@@ -110,6 +141,28 @@
           <dd>Test shop</dd>
         </dl>
       </f:group>
+      <f:group model="request_log_model" ref="instance('i_scap_requests')/records">
+        <table id="transaction_result">
+          <f:repeat nodeset="req">
+            <tr>
+              <td>
+                <time>
+                  <f:output value="substring(@received_at, 12, 8)"/>
+                </time>
+              </td>
+              <td>
+                <f:output ref="@source"/>
+              </td>
+              <td>
+                <f:output ref="@api"/>
+              </td>
+              <td>
+                <f:output ref="."/>
+              </td>
+            </tr>
+          </f:repeat>
+        </table>
+      </f:group>
       <f:group ref="manualEntry" id="card_info">
         <f:input ref="pan">
           <f:label>PAN: </f:label>
@@ -147,6 +200,8 @@
           <f:label>🆑 Clear</f:label>
           <f:action ev:event="DOMActivate">
             <f:reset model="m1"/>
+            <f:rebuild/>
+            <f:reset model="request_log_model"/>
           </f:action>
         </f:trigger>
         <f:submit submission="s1">
