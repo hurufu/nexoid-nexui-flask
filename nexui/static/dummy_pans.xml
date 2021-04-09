@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<testPans>
+  <brand pan=""/>
+  <brand pan="4485936516057131">VISA</brand>
+  <brand pan="4917505187608015">VISA Electron</brand>
+  <brand pan="5144061495831024">MasterCard</brand>
+  <brand pan="5038218334590356">Maestro</brand>
+  <brand pan="6011978759425573">Discover</brand>
+  <brand pan="30588293701510">Diners Club</brand>
+  <brand pan="3537208456619863956">JCB</brand>
+  <brand pan="375493854861485">AmEx</brand>
+</testPans>

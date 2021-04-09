@@ -1,9 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<?xml-stylesheet href="xsltforms1.5/build/xsl/xsltforms.xsl" type="text/xsl"?>
+<?xsltforms-options debug="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <head>
     <title>eCommerce demo (card not present)</title>
+    <link rel="stylesheet" href="demo_ecomm.css"/>
+    <f:model id="m1">
+      <f:instance id="i0">
+        <ScapiNngNotification xmlns="">
+          <ntf xmlns="">
+            <events>
+              <languageSelection>
+                <language>pl</language>
+              </languageSelection>
+              <serviceSelection>
+                <serviceId>
+                  <payment/>
+                </serviceId>
+              </serviceSelection>
+              <amountEntry>
+                <totalAmount>5699</totalAmount>
+              </amountEntry>
+              <manualEntry>
+                <pan/>
+                <expirationDate>
+                  <year/>
+                  <month/>
+                </expirationDate>
+                <cvdData>
+                  <cvd/>
+                </cvdData>
+              </manualEntry>
+            </events>
+          </ntf>
+          <id/>
+        </ScapiNngNotification>
+      </f:instance>
+      <f:instance src="dummy_pans.xml" id="i4"/>
+      <f:bind ref="instance('i0')/ntf/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000 and . &gt; 99" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/year" type="decimal" constraint=". &gt; 19 and . &lt; 100" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/month" type="decimal" constraint=". &lt; 13" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/totalAmount" type="decimal" constraint=". &lt; power(10, 12)-1" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/supplementaryAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/cashbackAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
+      <f:bind ref="instance('i0')/id" type="decimal" calculate="round(random() * 10000)"/>
+      <f:submission id="s1" method="post" replace="none" resource="../nexo">
+        <f:message level="modeless" ev:event="xforms-submit-error">Submit error</f:message>
+        <f:action ev:event="xforms-submit-done">
+          <f:delete nodeset="instance('i0')/*"/>
+        </f:action>
+      </f:submission>
+    </f:model>
   </head>
   <body>
-    <p>Demo placeholder</p>
+    <ul id="header">
+      <li>
+        <div>Compatible with</div>
+        <a href="https://www.iso20022.org/">
+          <img alt="ISO 20022 logo" class="logo" src="https://www.iso20022.org/themes/custom/iso20022_theme/images/logo-swift-iso20022.svg"/>
+        </a>
+        <span style="color: #02219c; font-weight: 600; font-size: 1rem; letter-spacing: 1.67px"> ISO 20022</span>
+      </li>
+      <li>
+        <div>Based on nexo specification</div>
+        <a href="https://www.nexo-standards.org/" target="_top">
+          <img alt="nexo logo" class="logo" src="https://www.nexo-standards.org/sites/default/files/nexo.png"/>
+        </a>
+      </li>
+      <li>
+        <div>Follow my project on</div>
+        <a href="https://github.com/users/hurufu/projects/1" target="_top">
+          <img alt="github" class="logo" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Logo.png"/>
+          <img alt="github logo" class="logo" src="https://github.githubassets.com/images/modules/logos_page/Octocat.png"/>
+        </a>
+      </li>
+    </ul>
+    <h3 class="text">Technology demonstration</h3>
+    <f:group ref="instance('i0')/ntf/events" id="user_data">
+      <f:group ref="amountEntry" id="transaction_info">
+        <dl>
+          <dt>Buyer</dt>
+          <dd>John Doe</dd>
+          <dt>Product</dt>
+          <dd>Test #123</dd>
+          <dt>Reference number</dt>
+          <dd>UJ7676F0</dd>
+          <dt>Price</dt>
+          <dd><f:output value="totalAmount div 100"/> PLN</dd>
+          <dt>Vendor</dt>
+          <dd>Test shop</dd>
+        </dl>
+      </f:group>
+      <f:group ref="manualEntry" id="card_info">
+        <f:input ref="pan">
+          <f:label>PAN: </f:label>
+          <f:alert>Must have correct Luhn checksum</f:alert>
+        </f:input>
+        <f:select1 ref="pan">
+          <f:label>or dummy value for: </f:label>
+          <f:itemset nodeset="instance('i4')/brand">
+            <f:label ref="."/>
+            <f:value ref="@pan"/>
+          </f:itemset>
+        </f:select1>
+        <f:group ref="expirationDate">
+          <fieldset>
+            <legend>Expitation Date</legend>
+            <f:input ref="year">
+              <f:label>Year: </f:label>
+              <f:alert>2 digits from 20 to 99</f:alert>
+            </f:input>
+            <f:input ref="month">
+              <f:label>Month: </f:label>
+              <f:alert>2 digits from 1 to 12</f:alert>
+            </f:input>
+          </fieldset>
+        </f:group>
+        <f:group ref="cvdData">
+          <f:input ref="cvd">
+            <f:label>CVD: </f:label>
+            <f:alert>Must consist of 3 digits</f:alert>
+          </f:input>
+        </f:group>
+      </f:group>
+      <f:group id="controls">
+        <f:trigger>
+          <f:label>🆑 Clear</f:label>
+          <f:action ev:event="DOMActivate">
+            <f:reset model="m1"/>
+          </f:action>
+        </f:trigger>
+        <f:submit submission="s1">
+          <f:label>💳 Pay</f:label>
+        </f:submit>
+      </f:group>
+    </f:group>
+    <hr/>
+    <p class="text">Demo eCommerce form. All activity is simulated.</p>
   </body>
 </html>
