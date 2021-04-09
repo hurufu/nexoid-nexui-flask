@@ -60,9 +60,9 @@
       <f:bind ref="instance('i0')/ntf/events/amountEntry/supplementaryAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
       <f:bind ref="instance('i0')/ntf/events/amountEntry/cashbackAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
       <f:bind ref="instance('i0')/id" type="decimal" calculate="round(random() * 10000)"/>
-      <f:bind ref="instance('i5')/amount/modifiable" type="boolean" readonly="false()"/>
+      <f:bind ref="instance('i5')/amount/modifiable" type="boolean" readonly="count(instance('i0')/ntf/events)=0"/>
       <f:bind ref="instance('i5')/amount/displayed" type="decimal" relevant="../modifiable=false()" calculate="../raw * 0.01"/>
-      <f:bind ref="instance('i5')/amount/raw" type="decimal" relevant="../modifiable=true()"/>
+      <f:bind ref="instance('i5')/amount/raw" type="decimal" readonly="count(instance('i0')/ntf/events)=0" relevant="../modifiable=true()"/>
       <f:bind ref="instance('i5')/amount/currency" type="string" relevant="../modifiable=false()" readonly="true()"/>
       <f:submission id="s1" method="post" replace="none" resource="../nexo">
         <f:message level="modeless" ev:event="xforms-submit-error">Submit error</f:message>
