@@ -19,6 +19,7 @@ img.logo {
 
 .text {
     text-align: center;
+    font-variant: normal;
 }
 
 #user_data {
@@ -50,4 +51,8 @@ img.logo {
 #transaction_info dl dt {
     font-variant: small-caps;
     color: gray;
+}
+
+#amount xforms-body input {
+    width: 5em;
 }

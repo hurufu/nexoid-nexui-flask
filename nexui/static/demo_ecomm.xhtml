@@ -19,7 +19,7 @@
                 </serviceId>
               </serviceSelection>
               <amountEntry>
-                <totalAmount>5699</totalAmount>
+                <totalAmount/>
               </amountEntry>
               <manualEntry>
                 <pan/>
@@ -37,14 +37,28 @@
         </ScapiNngNotification>
       </f:instance>
       <f:instance src="dummy_pans.xml" id="i4"/>
+      <f:instance id="i5">
+        <WorkingData xmlns="">
+          <amount>
+            <modifiable>false</modifiable>
+            <currency>PLN</currency>
+            <raw>5699</raw>
+            <displayed/>
+          </amount>
+        </WorkingData>
+      </f:instance>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000 and . &gt; 99" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/year" type="decimal" constraint=". &gt; 19 and . &lt; 100" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/expirationDate/month" type="decimal" constraint=". &lt; 13" required="true()"/>
-      <f:bind ref="instance('i0')/ntf/events/amountEntry/totalAmount" type="decimal" constraint=". &lt; power(10, 12)-1" required="true()"/>
+      <f:bind ref="instance('i0')/ntf/events/amountEntry/totalAmount" type="decimal" constraint=". &lt; power(10, 12)-1" required="true()" calculate="instance('i5')/amount/raw"/>
       <f:bind ref="instance('i0')/ntf/events/amountEntry/supplementaryAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
       <f:bind ref="instance('i0')/ntf/events/amountEntry/cashbackAmount" type="decimal" constraint=". &lt; power(10, 12)-1"/>
       <f:bind ref="instance('i0')/id" type="decimal" calculate="round(random() * 10000)"/>
+      <f:bind ref="instance('i5')/amount/modifiable" type="boolean" readonly="false()"/>
+      <f:bind ref="instance('i5')/amount/displayed" type="decimal" relevant="../modifiable=false()" calculate="../raw * 0.01"/>
+      <f:bind ref="instance('i5')/amount/raw" type="decimal" relevant="../modifiable=true()"/>
+      <f:bind ref="instance('i5')/amount/currency" type="string" relevant="../modifiable=false()" readonly="true()"/>
       <f:submission id="s1" method="post" replace="none" resource="../nexo">
         <f:message level="modeless" ev:event="xforms-submit-error">Submit error</f:message>
         <f:action ev:event="xforms-submit-done">
@@ -78,7 +92,7 @@
     </ul>
     <h3 class="text">Technology demonstration</h3>
     <f:group ref="instance('i0')/ntf/events" id="user_data">
-      <f:group ref="amountEntry" id="transaction_info">
+      <f:group ref="instance('i5')/amount" id="transaction_info">
         <dl>
           <dt>Buyer</dt>
           <dd>John Doe</dd>
@@ -86,8 +100,12 @@
           <dd>Test #123</dd>
           <dt>Reference number</dt>
           <dd>UJ7676F0</dd>
-          <dt>Price</dt>
-          <dd><f:output value="totalAmount div 100"/> PLN</dd>
+          <dt><f:input ref="modifiable"><f:hint class="text">Adjust price</f:hint></f:input> Price</dt>
+          <dd>
+            <f:input id="amount" ref="raw"/>
+            <f:output ref="displayed"/>
+            <f:output ref="currency"/>
+          </dd>
           <dt>Vendor</dt>
           <dd>Test shop</dd>
         </dl>
