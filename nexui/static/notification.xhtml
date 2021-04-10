@@ -81,7 +81,7 @@
           <brand pan="375493854861485">AmEx</brand>
         </testPans>
       </f:instance>
-      <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean" readonly="true()"/>
+      <f:bind ref="instance('i1')/notification/@cvdDataPresent" type="boolean" readonly="false()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/cvdData" relevant="instance('i1')/notification/@cvdDataPresent=true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/cvdData/cvd" type="decimal" constraint=". &lt; 1000 and . &gt; 99" required="true()"/>
       <f:bind ref="instance('i0')/ntf/events/manualEntry/pan" type="card-number" constraint="is-card-number(.)" required="true()"/>
@@ -177,7 +177,6 @@
               <span>CVD Data</span>
               <f:input ref="instance('i1')/notification/@cvdDataPresent">
                 <f:hint>Is CVD presence information available before transaction?</f:hint>
-                <f:help>CVD is always required in current release build</f:help>
               </f:input>
             </legend>
             <f:group ref="cvdData">
