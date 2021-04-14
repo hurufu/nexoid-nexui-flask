@@ -67,6 +67,12 @@ def map_cardholder_message(language, msg):
             'pl': icon_aborted + 'Transakcję przerwano',
             'fr': icon_aborted + 'Transaction annulée',
             'de': icon_aborted + 'Transaktion abgebrochen',
+        },
+        'crdhldrMsgCashbackNotAllowed': {
+            'en': 'Cashback Not Allowed',
+            'pl': 'Wypłata gotówki niedozwolona',
+            'fr': 'Cashback non autorisé',
+            'de': 'Cashback nicht erlaubt',
         }
     }
     return mapping[msg][language]
