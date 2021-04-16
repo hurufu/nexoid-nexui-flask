@@ -1,5 +1,6 @@
 body {
     background: #5da5e7 url(https://external-preview.redd.it/NAbc4A6OIumHsQaTLoTJrbF-qze-IcMvcH6-b15Rcps.png?blur=40&format=pjpg&auto=webp&s=80269aa2b15409c7428780e1aafb83426973accb) center top no-repeat;
+    background-size: cover;
     font-family: sans-serif;
     color: #003f70;
 }
@@ -20,6 +21,11 @@ img.logo {
 .text {
     text-align: center;
     font-variant: normal;
+}
+
+h5, p {
+    font-variant: normal;
+    color: black;
 }
 
 #user_data {

@@ -3,7 +3,7 @@
 <?xsltforms-options debug="no"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <head>
-    <title>eCommerce demo (card not present)</title>
+    <title>e-commerce demo (card not present)</title>
     <link rel="stylesheet" href="demo_ecomm.css"/>
     <script>module = {}; // Silence the warning in nanomsg-browser</script>
     <script src="https://cdn.jsdelivr.net/npm/nanomsg-browser@0.2.0/dist/nanomsg.min.js"/>
@@ -115,14 +115,14 @@
       </li>
       <li>
         <div>Follow my project on</div>
-        <a href="https://github.com/users/hurufu/projects/1" target="_top">
+        <a href="https://github.com/hurufu?tab=projects" target="_top">
           <img alt="github" class="logo" src="https://github.githubassets.com/images/modules/logos_page/GitHub-Logo.png"/>
           <img alt="github logo" class="logo" src="https://github.githubassets.com/images/modules/logos_page/Octocat.png"/>
         </a>
       </li>
     </ul>
     <h3 class="text">Technology demonstration</h3>
-    <h4 class="text">One-shot transaction applicable for eCommerce</h4>
+    <h4 class="text">One-shot transaction applicable for e-commerce</h4>
     <f:group ref="instance('i0')/ntf/events" id="user_data">
       <f:group ref="instance('i5')/amount" id="transaction_info">
         <dl>
@@ -225,6 +225,31 @@
       </f:group>
     </f:group>
     <hr/>
-    <p class="text">Demo eCommerce form. All activity is simulated.</p>
+    <h5>What is it?</h5>
+    <p>You are looking at the demo fronted to
+      <abbr title="Sale system, Cardholder, Attendant Protocol">SCAP</abbr>
+      as defined in
+      nexo-<abbr title="Financial Application Specification for Terminals">FAST</abbr>.
+      It turns out that it's general design fits nicely into
+      different use cases. Nexo can be configured in multitude
+      ways one of which is one-shot (without asking any
+      additional questions) transaction with manually entered
+      card data. Which is basically a transaction in e-commerce
+      paradigm. This demo showcases that.</p>
+    <h5>Is it all nexo implementation can do?</h5>
+    <p>It's far from the only uses of the this implementation.
+      Arguably it's most suited to be embedded into a terminal
+      (PoS) software, but given modular design it can be used
+      in many different scenarios like this one.</p>
+    <h5>How does it work?</h5>
+    <p>All of the business logic is defined by nexo-FAST and is
+      implemented in the back-end, which controls this
+      small UI app.</p>
+    <h5>Where is 3D-Secure?</h5>
+    <p>3D Secure is irrelevant for this demo, it should be
+      implemented in production by redirecting user to the
+      appropriate page.</p>
+    <hr/>
+    <p class="text">Demo e-commerce form. All activity is simulated.</p>
   </body>
 </html>
