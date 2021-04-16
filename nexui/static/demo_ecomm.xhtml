@@ -67,6 +67,7 @@
       <f:submission id="s1" method="post" replace="none" resource="../nexo">
         <f:message level="modeless" ev:event="xforms-submit-error">Submit error</f:message>
         <f:action ev:event="xforms-submit-done">
+          <f:setvalue ref="instance('i5')/amount/modifiable" value="false()"/>
           <f:delete nodeset="instance('i0')/*"/>
         </f:action>
       </f:submission>
