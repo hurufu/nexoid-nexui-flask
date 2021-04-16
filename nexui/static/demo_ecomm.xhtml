@@ -122,8 +122,8 @@
         </a>
       </li>
     </ul>
-    <h3 class="text">Technology demonstration</h3>
-    <h4 class="text">One-shot transaction applicable for e-commerce</h4>
+    <h2 class="text">Technology demonstration</h2>
+    <h3 class="text">One-shot transaction applicable for e-commerce</h3>
     <f:group ref="instance('i0')/ntf/events" id="user_data">
       <f:group ref="instance('i5')/amount" id="transaction_info">
         <dl>
@@ -166,10 +166,12 @@
         </table>
       </f:group>
       <f:group ref="manualEntry" id="card_info">
+        <f:label>Please provide card data </f:label>
+        <div>Don't enter real card data. Use sample card numbers from the menu below!</div>
         <f:input ref="pan">
           <f:label>PAN: </f:label>
           <f:alert>Must have correct Luhn checksum</f:alert>
-          <f:hint>Must have correct Luhn checksum</f:hint>
+          <f:hint>Card number must have correct <a href="https://en.wikipedia.org/wiki/Luhn_algorithm" target="_top">Luhn</a> checksum</f:hint>
         </f:input>
         <f:select1 ref="pan">
           <f:label>or dummy value for: </f:label>
@@ -183,8 +185,8 @@
             <legend>Expiration Date</legend>
             <f:input ref="year">
               <f:label>Year: </f:label>
-              <f:alert>2 digits from 21 to 99</f:alert>
-              <f:hint>2 digits from 21 to 99</f:hint>
+              <f:alert>2 digits from 22 to 99</f:alert>
+              <f:hint>2 digits from 22 to 99</f:hint>
             </f:input>
             <f:input ref="month">
               <f:label>Month: </f:label>
@@ -197,7 +199,7 @@
           <f:input ref="cvd">
             <f:label>CVD: </f:label>
             <f:alert>Must consist of 3 digits</f:alert>
-            <f:hint>Must consist of 3 digits</f:hint>
+            <f:hint>CVD must consist of 3 digits</f:hint>
           </f:input>
         </f:group>
       </f:group>
@@ -230,28 +232,47 @@
       </f:group>
     </f:group>
     <hr/>
-    <h5>What is it?</h5>
-    <p>You are looking at the demo fronted to
+    <h4>What is it?</h4>
+    <h5>Explanation for someone new to nexo</h5>
+    <p>This is a UI for a payment terminal software based on an open specification
+      nexo-<abbr title="Financial Application Specification for Terminals">FAST</abbr>
+      (available at <a href="https://www.nexo-standards.org/" target="_top">nexo-standards</a>
+      website). This app shows small subset of functionality that can be presented
+      as a web application. It's the first open nexo implementation to my knowledge.
+    </p>
+    <h5>Explanation for someone familiar with nexo</h5>
+    <p>You are looking at the demo front-end to
       <abbr title="Sale system, Cardholder, Attendant Protocol">SCAP</abbr>
-      as defined in
-      nexo-<abbr title="Financial Application Specification for Terminals">FAST</abbr>.
+      as defined in nexo-FAST.
+      This particular app
+      demonstrates the ability to trigger transaction by sending specific events
+      <code>Amount_Entry_Event</code>, <code>Manual_Entry_Event</code> and some others
+      defined in section 5.2.2.
+
+      Nexo application can be configured in many ways.
+
       It turns out that it's general design fits nicely into
       different use cases. Nexo can be configured in multitude
       ways one of which is one-shot (without asking any
       additional questions) transaction with manually entered
       card data. Which is basically a transaction in e-commerce
-      paradigm. This demo showcases that.</p>
-    <h5>Is it all nexo implementation can do?</h5>
-    <p>It's far from the only uses of the this implementation.
+      paradigm. This demo shows that.</p>
+    <h4>Is it all nexo implementation can do?</h4>
+    <p>It's far from the only uses of this implementation.
       Arguably it's most suited to be embedded into a terminal
       (PoS) software, but given modular design it can be used
       in many different scenarios like this one.</p>
-    <h5>How does it work?</h5>
+    <h4>How does it work?</h4>
     <p>All of the business logic is defined by nexo-FAST and is
       implemented in the back-end, which controls this
-      small UI app.</p>
-    <h5>Where is 3D-Secure?</h5>
-    <p>3D Secure is irrelevant for this demo, it should be
+      small UI app.
+      Underlying back-end is a faithful implementation of the mentioned specification
+      mostly written in C,
+      and it is implemented in such a way that it can be embedded into a most restricted payment
+      terminal or running as a standalone web server using Python.
+    </p>
+    <h4>Where is 3D-Secure?</h4>
+    <p><a href="https://en.wikipedia.org/wiki/3-D_Secure" target="_top">3D-Secure</a> is irrelevant for this demo, it should be
       implemented in production by redirecting user to the
       appropriate page.</p>
     <hr/>
