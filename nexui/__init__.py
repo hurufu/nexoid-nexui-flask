@@ -1,4 +1,5 @@
 '''NEXUI - Demo UI for nexo-in-the-cloud'''
+import os
 import threading
 import subprocess
 from logging.config import dictConfig
@@ -17,6 +18,7 @@ from flask import (
     redirect,
     url_for,
     request,
+    send_from_directory,
 )
 import click
 
@@ -71,6 +73,12 @@ def notification_socket(*args, name='fat_notifier', **kwargs):
     return socket
 
 app = Flask(__name__, instance_relative_config=True)
+
+@app.route('/favicon.ico')
+def favicon():
+    '''Redirect to favicon'''
+    path = os.path.join(app.root_path, 'static')
+    return send_from_directory(path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/nexo', methods=['GET'])
 def get_scap_notification_form():
