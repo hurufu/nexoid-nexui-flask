@@ -77,6 +77,11 @@ h4, h5, p {
 #controls xforms-group xforms-trigger,
 #controls xforms-group xforms-submit,
 button {
-    font-size: large;
     height: 100%;
+}
+
+button xforms-label {
+    font-size: large;
+    font-style: normal;
+    font-weight: normal;
 }
