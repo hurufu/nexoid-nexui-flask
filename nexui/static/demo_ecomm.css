@@ -59,6 +59,9 @@ h4, h5, p {
 #controls {
     margin: 10px;
     width: min-content;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    display: flex;
 }
 
 #transaction_info dl dt {
@@ -68,4 +71,12 @@ h4, h5, p {
 
 #amount xforms-body input {
     width: 5em;
+}
+
+#controls xforms-group,
+#controls xforms-group xforms-trigger,
+#controls xforms-group xforms-submit,
+button {
+    font-size: large;
+    height: 100%;
 }
