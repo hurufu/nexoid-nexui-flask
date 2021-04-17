@@ -236,45 +236,55 @@
     <h5>Explanation for someone new to nexo</h5>
     <p>This is a UI for a payment terminal software based on an open specification
       nexo-<abbr title="Financial Application Specification for Terminals">FAST</abbr>
-      (available at <a href="https://www.nexo-standards.org/" target="_top">nexo-standards</a>
-      website). This app shows small subset of functionality that can be presented
-      as a web application. It's the first open nexo implementation to my knowledge.
+      (freely available at
+      <a href="https://www.nexo-standards.org/" target="_top">nexo-standards</a>
+      website). Nexo application can be configured in many ways and it's general
+      design fits nicely into different use cases. This app shows small subset
+      of functionality that can be presented as a web application. It's the
+      first open nexo implementation to my knowledge.
     </p>
     <h5>Explanation for someone familiar with nexo</h5>
     <p>You are looking at the demo front-end to
       <abbr title="Sale system, Cardholder, Attendant Protocol">SCAP</abbr>
-      as defined in nexo-FAST.
-      This particular app
-      demonstrates the ability to trigger transaction by sending specific events
-      <code>Amount_Entry_Event</code>, <code>Manual_Entry_Event</code> and some others
-      defined in section 5.2.2.
-
-      Nexo application can be configured in many ways.
-
-      It turns out that it's general design fits nicely into
-      different use cases. Nexo can be configured in multitude
-      ways one of which is one-shot (without asking any
-      additional questions) transaction with manually entered
-      card data. Which is basically a transaction in e-commerce
-      paradigm. This demo shows that.</p>
+      as defined in nexo-FAST. This particular app demonstrates the ability to
+      trigger transactions by sending specific events: <code>Amount_Entry_Event</code>,
+      <code>Manual_Entry_Event</code>, <code>Service_Selection_Event</code> and
+      <code>Language_Selection_Event</code> all defined in section 5.2.2.
+      In order to show transaction outcome to the user, this app displays
+      data sent by <em>Data Output Interaction</em> (defined in 12.2.3.2).
+      Additionally <em>Update Interfaces</em> (7.3.2.4) is used to simulate
+      disabling or enabling of a card reader.</p>
+    <p>After transaction is started UI displays all received messages. Output
+      interactions are prefixed with <code>output</code>. Interface updates are
+      prefixed with <code>interface</code> followed by sequence of bits that show
+      status of each particular interface. Mostly as a demonstrations of inner
+      workings this UI shows placeholders for <em>Sale System Notification</em>
+      using <code>ssn</code> prefix and <em>Data Print Interaction</em> with
+      <code>print</code>. Non-nexo extensions are prefixed with
+      <abbr title="Proprietary Application Protocol"><code>pap</code></abbr>.</p>
+    <p>You can choose different card brands to test different execution paths
+      in nexo application.</p>
     <h4>Is it all nexo implementation can do?</h4>
-    <p>It's far from the only uses of this implementation.
-      Arguably it's most suited to be embedded into a terminal
-      (PoS) software, but given modular design it can be used
-      in many different scenarios like this one.</p>
+    <p>It's far from the only uses of this implementation. Arguably it's most
+      suited to be embedded into a terminal (<abbr title="Point of Sale">PoS</abbr>)
+      software, but given modular design it can be used in many different
+      scenarios like this one.</p>
     <h4>How does it work?</h4>
-    <p>All of the business logic is defined by nexo-FAST and is
-      implemented in the back-end, which controls this
-      small UI app.
-      Underlying back-end is a faithful implementation of the mentioned specification
-      mostly written in C,
-      and it is implemented in such a way that it can be embedded into a most restricted payment
-      terminal or running as a standalone web server using Python.
-    </p>
+    <p>Complete business logic is defined by nexo-FAST and is implemented in
+      the back-end, which controls this small UI app. Underlying back-end is a
+      faithful implementation of the mentioned specification.</p>
+    <p>It is implemented in such a way that it can be embedded into a most
+      restricted payment terminal or it can be running as a standalone web server.</p>
     <h4>Where is 3D-Secure?</h4>
     <p><a href="https://en.wikipedia.org/wiki/3-D_Secure" target="_top">3D-Secure</a> is irrelevant for this demo, it should be
       implemented in production by redirecting user to the
       appropriate page.</p>
+    <h4>What technological stack is used?</h4>
+    <p>I'm glad you've asked! Core of application is mostly written using
+      <a href="http://drakon-editor.sourceforge.net/" target="_top">DRAKON</a> diagrams. They
+      are used to generate highly portable C code. The rest of application is
+      written in C++ and Python. UI is written in XForms. Protocols are defined
+      using ASN.1.</p>
     <hr/>
     <p class="text">Demo e-commerce form. All activity is simulated.</p>
   </body>
