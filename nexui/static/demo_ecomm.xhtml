@@ -256,7 +256,7 @@
       disabling or enabling of a card reader.</p>
     <p>After transaction is started UI displays all received messages. Output
       interactions are prefixed with <code>output</code>. Interface updates are
-      prefixed with <code>interface</code> followed by sequence of bits that show
+      prefixed with <code>interface</code> followed by sequence of bits that shows
       status of each particular interface. Mostly as a demonstrations of inner
       workings this UI shows placeholders for <em>Sale System Notification</em>
       using <code>ssn</code> prefix and <em>Data Print Interaction</em> with
@@ -273,8 +273,6 @@
     <p>Complete business logic is defined by nexo-FAST and is implemented in
       the back-end, which controls this small UI app. Underlying back-end is a
       faithful implementation of the mentioned specification.</p>
-    <p>It is implemented in such a way that it can be embedded into a most
-      restricted payment terminal or it can be running as a standalone web server.</p>
     <h4>Where is 3D-Secure?</h4>
     <p><a href="https://en.wikipedia.org/wiki/3-D_Secure" target="_top">3D-Secure</a> is irrelevant for this demo, it should be
       implemented in production by redirecting user to the
@@ -287,6 +285,8 @@
       are used to generate highly portable C code. The rest of application is
       written in C++ and Python. UI is written in XForms. Protocols are defined
       using ASN.1.</p>
+    <p>It is implemented in such a way that it can be embedded into a most
+      restricted payment terminal or it can be running as a standalone web server.</p>
     <hr/>
     <p class="text">Demo e-commerce form. All activity is simulated.</p>
   </body>
