@@ -353,13 +353,24 @@ def map_cardholder_entry(language, msg):
     }
     return mapping[msg][language]
 
+def map_missing_parameters(language, msg):
+    '''map_missing_parameters'''
+    mapping = {
+        'en': 'Missing parameters: ',
+        'pl': 'Brakujące parametry: ',
+        'fr': 'Paramètres manquants: ',
+        'de': 'Fehlende Parameter: ',
+    }
+    return mapping[language] + ' '.join(msg)
+
 def map_output(language, out):
     '''map_output'''
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
         'nokReason': map_nokreason,
-        'formattedTrxAmount': lambda lang, out : out
+        'formattedTrxAmount': lambda _lang, out : out,
+        'missingParameters': map_missing_parameters,
     }
     return mapping[out[0]](language, out[1])
 
