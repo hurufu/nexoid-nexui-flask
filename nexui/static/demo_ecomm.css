@@ -23,6 +23,11 @@ img.logo {
     font-variant: normal;
 }
 
+.text a {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 h4, h5, p {
     font-variant: normal;
     color: black;
