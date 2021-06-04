@@ -73,7 +73,25 @@ def map_cardholder_message(language, msg):
             'pl': 'Wypłata gotówki niedozwolona',
             'fr': 'Cashback non autorisé',
             'de': 'Cashback nicht erlaubt',
-        }
+        },
+        'crdhldrEmvUseMagStripe': {
+            'en': 'USE MAG STRIPE',
+            'pl': 'UŻYJ PASKA MAGNETYCZNEGO',
+            'fr': 'UTILISER UNE BANDE MAGNÉTIQUE',
+            'de': 'MAGNETSTREIFEN VERWENDEN',
+        },
+        'crdhldrEmvInsertCard': {
+            'en': 'INSERT CARD',
+            'pl': 'WŁÓŻ KARTĘ',
+            'fr': 'INSÉRER LA CARTE',
+            'de': 'KARTE EINFÜHREN',
+        },
+        'crdhldrMsgSupplementaryAmountNotAllowed': {
+            'en': "Supplementary amount isn't allowed",
+            'pl': 'Napiwek niedozwolony',
+            'fr': "Le montant supplémentaire n'est pas autorisé",
+            'de': 'Ergänzungsbetrag ist nicht zulässig',
+        },
     }
     return mapping[msg][language]
 
@@ -349,7 +367,19 @@ def map_cardholder_entry(language, msg):
             'pl': 'Czy podano CVD?',
             'fr': 'Le CVD est-il présent?',
             'de': 'Ist CVD vorhanden?',
-        }
+        },
+        'crdhldrEntEnterExpiryDate': {
+            'en': 'Enter expiry date',
+            'pl': 'Karta ważna do:',
+            'fr': "Entrer la date d'expiration",
+            'de': 'Ablaufdatum eingeben',
+        },
+        'crdhldrEntEnterPan': {
+            'en': 'Enter PAN',
+            'pl': 'Wprowadź numer karty',
+            'fr': 'Entrer le numéro de carte',
+            'de': 'Kartennummer eingeben',
+        },
     }
     return mapping[msg][language]
 
@@ -371,6 +401,7 @@ def map_output(language, out):
         'nokReason': map_nokreason,
         'formattedTrxAmount': lambda _lang, out : out,
         'missingParameters': map_missing_parameters,
+        'status': lambda _lang, out : out,
     }
     return mapping[out[0]](language, out[1])
 
