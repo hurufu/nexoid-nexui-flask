@@ -441,8 +441,11 @@ def map_entry(language, entry):
 
 def convert_entry(api, payload):
     '''convert_entry'''
+    def choose_api():
+        return 'pin' if any(x[1] == 'crdhldrMsgEnterPin' for x in payload['what']) else api
+
     return [{
-        'api': api,
+        'api': choose_api(),
         'line': [ map_entry(payload['language'], what) for what in payload['what'] ]
     }]
 

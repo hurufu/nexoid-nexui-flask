@@ -32,6 +32,18 @@ function nexui_ack_cvdPresence(presence) {
     nexui_send({ackEntry: [{cvdPresence: presence}]});
 }
 
+function nexui_send_pin(obj) {
+    nexui_send({ackEntry: [{pin: obj}]});
+}
+
+function nexui_ack_pin(pin_str) {
+    nexui_send_pin({plainTextPin: pin_str});
+}
+
+function nexui_ack_pin_bypassed() {
+    nexui_send_pin({noPin: 'pinEntryBypassed'});
+}
+
 sock.on('data', function(msg) {
     function get_payload() {
         return JSON.parse(dec.decode(msg.slice(4, msg.byteLength)));
