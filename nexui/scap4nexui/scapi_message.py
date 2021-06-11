@@ -380,6 +380,24 @@ def map_cardholder_entry(language, msg):
             'fr': 'Entrer le numéro de carte',
             'de': 'Kartennummer eingeben',
         },
+        'crdhldrMsgEnterPin': {
+            'en': 'Enter PIN',
+            'pl': 'Wprowadź PIN',
+            'fr': 'Entrer le code PIN',
+            'de': 'Pin eingeben',
+        },
+        'crdhldrMsgNoPin': {
+            'en': 'Bypass PIN entry',
+            'pl': 'Pomiń PIN',
+            'fr': 'Ignorer la saisie du code PIN',
+            'de': 'PIN-Eingabe umgehen',
+        },
+        'crdhldrMsgAmount': {
+            'en': 'Amount:',
+            'pl': 'Kwota:',
+            'fr': 'Montant:',
+            'de': 'Betrag',
+        },
     }
     return mapping[msg][language]
 
@@ -393,22 +411,31 @@ def map_missing_parameters(language, msg):
     }
     return mapping[language] + ' '.join(msg)
 
+def noop(_lang, out):
+    '''noop'''
+    return out
+
 def map_output(language, out):
     '''map_output'''
     mapping = {
         'msg': map_cardholder_message,
         'selectedService': map_selected_service,
         'nokReason': map_nokreason,
-        'formattedTrxAmount': lambda _lang, out : out,
+        'formattedTrxAmount': noop,
         'missingParameters': map_missing_parameters,
-        'status': lambda _lang, out : out,
+        'status': noop,
     }
     return mapping[out[0]](language, out[1])
 
 def map_entry(language, entry):
     '''map_entry'''
     mapping = {
-        'msg': map_cardholder_entry
+        'msg': map_cardholder_entry,
+        'applicationLabelDisplayed': noop,
+        'commandKeyEnterLabel': noop,
+        'commandKeyPinBypassLabel': noop,
+        'selectedService': noop,
+        'formattedTrxAmount': noop,
     }
     return mapping[entry[0]](language, entry[1])
 
@@ -452,7 +479,7 @@ def format_trx_amount(language, amount_data):
     formatted_amount = format_currency(amount, currency, locale=get_locale())
     return ('formattedTrxAmount', formatted_amount)
 
-def convert_output_filter(api, payload):
+def convert_filter(payload):
     '''convert_output_filter
     Refactor this function! It's ugly AF
     '''
@@ -483,7 +510,15 @@ def convert_output_filter(api, payload):
             filtered.append(('formattedTrxAmount', 'Not enough data to format amount'))
 
     payload['what'] = filtered
-    return convert_output(api, payload)
+    return payload
+
+def convert_output_filter(api, payload):
+    '''convert_output_filter'''
+    return convert_output(api, convert_filter(payload))
+
+def convert_entry_filter(api, payload):
+    '''convert_entry_filter'''
+    return convert_entry(api, convert_filter(payload))
 
 def convert_interfaces(_, payload):
     '''convert_interfaces'''
@@ -504,7 +539,7 @@ def convert_to_request_log_event(msg):
     print(msg)
     mapping = {
         'output': convert_output_filter,
-        'entry': convert_entry,
+        'entry': convert_entry_filter,
         'updateInterfaces': convert_interfaces,
         'print': convert_print
     }
