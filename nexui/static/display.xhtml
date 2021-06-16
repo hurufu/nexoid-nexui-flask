@@ -26,12 +26,26 @@
             <cvd key="cvdIllegible">CVD illegible</cvd>
             <cvd key="cvdNotPresent">CVD not present</cvd>
           </cvdPresence>
+          <pinEntry>
+            <pinPrompt>PIN+Enter: </pinPrompt>
+            <pinValid></pinValid>
+            <pinLength></pinLength>
+            <pinNumeric></pinNumeric>
+            <pin/>
+          </pinEntry>
         </display>
       </xf:instance>
       <xf:instance xmlns="" id="response_instance">
         <response/>
       </xf:instance>
       <xf:bind nodeset="instance('display_instance')/cvdPresence" relevant="instance('display_instance')/prompt='cvdPresence'"/>
+      <xf:bind nodeset="instance('display_instance')/pinEntry/pin"
+               type="string"
+               relevant="instance('display_instance')/prompt='pinEntry'"
+               constraint="string-length(.) &gt; 3 and string-length(.) &lt; 13"/><!-- This constraint doesn't work with custom JS hook -->
+      <xf:bind nodeset="instance('display_instance')/pinEntry/pinLength" type="decimal" calculate="string-length(../pin)"/>
+      <xf:bind nodeset="instance('display_instance')/pinEntry/pinNumeric" type="decimal" calculate="../pin * 1"/>
+      <xf:bind nodeset="instance('display_instance')/pinEntry/pinValid" type="boolean" calculate="../pinLength &gt; 3 and ../pinLength &lt; 13 and ../pinNumeric != 'NaN'" />
       <xf:action ev:event="request_log_event">
         <xf:insert nodeset="instance('request_log_instance')/txt" at="1" position="before"/>
         <xf:setvalue ref="instance('request_log_instance')/txt[1]/@api" value="event('api')"/>
@@ -41,10 +55,8 @@
         <xf:setvalue ref="instance('display_instance')/line" value="event('line')" if="event('api')='output' or event('api')='entry' or event('api')='pin'"/>
         <xf:setvalue ref="instance('display_instance')/interface" value="event('line')" if="event('api')='interface'"/>
         <!-- FIXME: Implement proper entry -->
-        <xf:load if="event('api')='pin'">
-          <xf:resource value="'javascript:nexui_ack_pin(&quot;11223&quot;)'"/>
-        </xf:load>
         <xf:setvalue ref="instance('display_instance')/prompt" value="'cvdPresence'" if="event('api')='entry'"/>
+        <xf:setvalue ref="instance('display_instance')/prompt" value="'pinEntry'" if="event('api')='pin'"/>
         <xf:load if="event('api') != 'entry' and event('api') != 'pin'">
           <xf:resource value="'javascript:nexui_ack()'"/>
         </xf:load>
@@ -87,6 +99,16 @@
           <xf:setvalue ref="instance('display_instance')/prompt"/>
         </xf:action>
       </xf:select1>
+      <xf:secret ref="pinEntry/pin">
+        <xf:label ref="../pinPrompt"/>
+        <xf:action ev:event="DOMActivate">
+          <xf:load if="../pinValid = true()">
+            <xf:resource value="concat('javascript:nexui_ack_pin(&quot;',.,'&quot;)')"/>
+          </xf:load>
+          <xf:setvalue if="../pinValid = true()" ref="../../prompt"/>
+          <xf:setvalue ref="."/>
+        </xf:action>
+      </xf:secret>
     </xf:group>
     <hr/>
     <table>
