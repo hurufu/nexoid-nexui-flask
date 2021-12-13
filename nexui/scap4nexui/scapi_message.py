@@ -32,6 +32,14 @@ class Counter:
             self.value -= 1
             return ret
 
+def synchronized(func):
+    '''Decorator that adds lock around a function call'''
+    func.__lock__ = threading.Lock()
+    def synchronized_function(*args, **kwargs):
+        with func.__lock__:
+            return func(*args, **kwargs)
+    return synchronized_function
+
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
     icon_please_wait = '⏳	'
