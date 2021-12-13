@@ -34,10 +34,12 @@ def main():
         def exchange_messages():
             req = fat.recv()
             debug(f"Received SCAPI request {req}")
+            sm.append_to_event_log('ScapiNngRequest', req)
             nexui.send(sm.tonexui(req))
             rsp = sm.fromnexui(nexui.recv())
             fat.send(rsp)
             debug(f"SCAPI response {rsp}")
+            sm.append_to_event_log('ScapiNngResponse', rsp)
 
         while True:
             exchange_messages()

@@ -91,6 +91,7 @@ def notify_scap():
     if notify_scap.ntf is None:
         # Figure out a way to cleanly shutdown SCAP notification socket
         notify_scap.ntf = notification_socket(dial='ipc:///tmp/fatnt')
+    scap4nexui.sm.append_to_event_log('ScapiNngNotification', request.data)
     notify_scap.ntf.send(request.data)
     debug(f"Sent SCAP notification {request.data}")
     return redirect(url_for('static', filename='notification.xhtml'))

@@ -1,6 +1,7 @@
 '''ASN.1'''
 import os
 import threading
+from datetime import datetime
 
 from bitstring import BitArray
 import asn1tools
@@ -9,9 +10,11 @@ from babel.numbers import format_currency
 ASN_SCAPI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Scapi.asn1')
 ASN_SCNNG_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/ScapiNngClient.asn1')
 ASN_NEXUI_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/Nexui.asn1')
+ASN_EVENT_LOG_MODULE_PATH = os.path.join(os.path.dirname(__file__), 'asn1/EventLog.asn1')
 
 asn = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_SCNNG_MODULE_PATH], 'xer')
 asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
+asn_event_log = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_EVENT_LOG_MODULE_PATH], 'xer')
 
 class Counter:
     '''The simplest possible thread-safe counter'''
@@ -577,3 +580,30 @@ def fromnexui(json_msg):
     return asn.encode('ScapiNngResponse', nng_msg, check_constraints=True)
 
 fromnexui.msg_counter = Counter(0)
+
+def append_to_event_log(root, apdu):
+    '''Appends APDU to the event log'''
+    @synchronized
+    def write(file, data):
+        file.write(data)
+    with open('/tmp/events', mode='ab', buffering=0) as event_log:
+        write(event_log, apdu_to_event_log(root, apdu))
+
+def apdu_to_event_log(root, apdu):
+    '''any_totest'''
+    mapping = {
+        'ScapiNngRequest': 'req',
+        'ScapiNngResponse': 'rsp',
+        'ScapiNngNotification': 'ntf'
+    }
+    msg = asn.decode(root, apdu, check_constraints=True)
+    test_mesg = {
+        'ts': datetime.now(),
+        'ev': {
+            'id': msg['id'],
+            'pd': (
+                mapping[root], msg[mapping[root]]
+            )
+        }
+    }
+    return asn_event_log.encode('EventLogRecord', test_mesg, check_constraints=True) + b'\n'
