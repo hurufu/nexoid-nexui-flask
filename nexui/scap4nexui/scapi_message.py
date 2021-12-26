@@ -3,6 +3,7 @@ import os
 import threading
 from datetime import datetime
 
+from dateutil.tz import tzlocal
 from bitstring import BitArray
 import asn1tools
 from babel.numbers import format_currency
@@ -598,7 +599,7 @@ def apdu_to_event_log(root, apdu):
     }
     msg = asn.decode(root, apdu, check_constraints=True)
     test_mesg = {
-        'ts': datetime.now(),
+        'ts': datetime.now(tzlocal()),
         'ev': {
             'id': msg['id'],
             'pd': (
