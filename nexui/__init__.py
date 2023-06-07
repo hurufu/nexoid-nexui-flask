@@ -20,7 +20,6 @@ from flask import (
     request,
     send_from_directory,
 )
-import click
 
 import pynng
 from timebudget import timebudget
@@ -48,6 +47,7 @@ dictConfig({
     }
 })
 
+
 @contextmanager
 def browser_distributor(*args, name='browser_distributor', **kwargs):
     '''Creates a socket for distributing requests to all connected browsers'''
@@ -56,6 +56,7 @@ def browser_distributor(*args, name='browser_distributor', **kwargs):
     yield socket
     info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
     socket.close()
+
 
 @contextmanager
 def local_ui_requests_gatherer(*args, name='ui_gatherer', **kwargs):
@@ -66,13 +67,16 @@ def local_ui_requests_gatherer(*args, name='ui_gatherer', **kwargs):
     info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
     socket.close()
 
+
 def notification_socket(*args, name='fat_notifier', **kwargs):
     '''Creates a socket for FAT notifications'''
     socket = pynng.Push0(*args, **kwargs)
     info(f"{socket.protocol_name} '{name}' dialed to {kwargs['dial']}")
     return socket
 
+
 app = Flask(__name__, instance_relative_config=True)
+
 
 @app.route('/favicon.ico')
 def favicon():
@@ -80,10 +84,12 @@ def favicon():
     path = os.path.join(app.root_path, 'static')
     return send_from_directory(path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+
 @app.route('/nexo', methods=['GET'])
 def get_scap_notification_form():
     '''Simple redirect to the main page with frames'''
     return redirect(url_for('static', filename='frames.html'))
+
 
 @app.route('/nexo', methods=['POST'])
 def notify_scap():
@@ -96,7 +102,9 @@ def notify_scap():
     debug(f"Sent SCAP notification {request.data}")
     return redirect(url_for('static', filename='notification.xhtml'))
 
+
 notify_scap.ntf = None
+
 
 @app.before_first_request
 def start_ui_server():

@@ -17,6 +17,7 @@ asn = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_SCNNG_MODULE_PATH], 'x
 asn_nexui = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_NEXUI_MODULE_PATH], 'jer')
 asn_event_log = asn1tools.compile_files([ASN_SCAPI_MODULE_PATH, ASN_EVENT_LOG_MODULE_PATH], 'xer')
 
+
 class Counter:
     '''The simplest possible thread-safe counter'''
     def __init__(self, start):
@@ -36,13 +37,16 @@ class Counter:
             self.value -= 1
             return ret
 
+
 def synchronized(func):
     '''Decorator that adds lock around a function call'''
     func.__lock__ = threading.Lock()
+
     def synchronized_function(*args, **kwargs):
         with func.__lock__:
             return func(*args, **kwargs)
     return synchronized_function
+
 
 def map_cardholder_message(language, msg):
     '''map_cardholder_message'''
@@ -106,6 +110,7 @@ def map_cardholder_message(language, msg):
         },
     }
     return mapping[msg][language]
+
 
 def map_selected_service(language, srv):
     '''map_selected_service'''
@@ -197,6 +202,7 @@ def map_selected_service(language, srv):
     }
     return mapping[srv][language]
 
+
 def map_sale_system_notification(language, ssn):
     '''map_sale_system_notification'''
     mapping = {
@@ -226,6 +232,7 @@ def map_sale_system_notification(language, ssn):
         },
     }
     return mapping[ssn][language]
+
 
 def map_nokreason(language, nok):
     '''map_nokreason'''
@@ -371,6 +378,7 @@ def map_nokreason(language, nok):
     }
     return mapping[nok][language]
 
+
 def map_cardholder_entry(language, msg):
     '''map_cardholder_entry'''
     mapping = {
@@ -413,6 +421,7 @@ def map_cardholder_entry(language, msg):
     }
     return mapping[msg][language]
 
+
 def map_missing_parameters(language, msg):
     '''map_missing_parameters'''
     mapping = {
@@ -423,9 +432,11 @@ def map_missing_parameters(language, msg):
     }
     return mapping[language] + ' '.join(msg)
 
+
 def noop(_lang, out):
     '''noop'''
     return out
+
 
 def map_output(language, out):
     '''map_output'''
@@ -439,6 +450,7 @@ def map_output(language, out):
     }
     return mapping[out[0]](language, out[1])
 
+
 def map_entry(language, entry):
     '''map_entry'''
     mapping = {
@@ -451,6 +463,7 @@ def map_entry(language, entry):
     }
     return mapping[entry[0]](language, entry[1])
 
+
 def convert_entry(api, payload):
     '''convert_entry'''
     def choose_api():
@@ -458,8 +471,9 @@ def convert_entry(api, payload):
 
     return [{
         'api': choose_api(),
-        'line': [ map_entry(payload['language'], what) for what in payload['what'] ]
+        'line': [map_entry(payload['language'], what) for what in payload['what']]
     }]
+
 
 def convert_output(api, payload):
     '''convert_output'''
@@ -478,6 +492,7 @@ def convert_output(api, payload):
         ret.append({'api': api, 'line': crd})
     return ret
 
+
 def format_trx_amount(language, amount_data):
     '''Formats amount according to received language and currency specifiers'''
     def get_locale():
@@ -493,6 +508,7 @@ def format_trx_amount(language, amount_data):
     currency = amount_data['trxCurrencyAlpha3']
     formatted_amount = format_currency(amount, currency, locale=get_locale())
     return ('formattedTrxAmount', formatted_amount)
+
 
 def convert_filter(payload):
     '''convert_output_filter
@@ -527,13 +543,16 @@ def convert_filter(payload):
     payload['what'] = filtered
     return payload
 
+
 def convert_output_filter(api, payload):
     '''convert_output_filter'''
     return convert_output(api, convert_filter(payload))
 
+
 def convert_entry_filter(api, payload):
     '''convert_entry_filter'''
     return convert_entry(api, convert_filter(payload))
+
 
 def convert_interfaces(_, payload):
     '''convert_interfaces'''
@@ -542,12 +561,14 @@ def convert_interfaces(_, payload):
         'line': [BitArray(payload['interfaceStatus'][0]).bin],
     }]
 
+
 def convert_print(api, payload):
     '''convert_print'''
     return [{
         'api': api,
         'line': [payload['type']]
     }]
+
 
 def convert_to_request_log_event(msg):
     '''convert_to_request_log_event'''
@@ -565,11 +586,13 @@ def convert_to_request_log_event(msg):
         'payload': mapping[msg[0]](msg[0], msg[1])
     }
 
+
 def tonexui(apdu):
     '''tonexui'''
     msg = asn.decode('ScapiNngRequest', apdu, check_constraints=True)
     ui_msg = convert_to_request_log_event(msg['req'])
     return asn_nexui.encode('UiRequest', ui_msg, check_constraints=True)
+
 
 def fromnexui(json_msg):
     '''fromnexui'''
@@ -580,7 +603,9 @@ def fromnexui(json_msg):
     }
     return asn.encode('ScapiNngResponse', nng_msg, check_constraints=True)
 
+
 fromnexui.msg_counter = Counter(0)
+
 
 def append_to_event_log(root, apdu):
     '''Appends APDU to the event log'''
@@ -589,6 +614,7 @@ def append_to_event_log(root, apdu):
         file.write(data)
     with open('/tmp/events', mode='ab', buffering=0) as event_log:
         write(event_log, apdu_to_event_log(root, apdu))
+
 
 def apdu_to_event_log(root, apdu):
     '''any_totest'''

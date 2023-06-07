@@ -9,6 +9,7 @@ from logging import (
 from pynng import (Req0, Rep0)
 from . import scapi_message as sm
 
+
 @contextmanager
 def ui_socket(*args, name='ui_req_from_scap', **kwargs):
     '''Creates UI socket for forwarding converted SCAPI requests'''
@@ -18,6 +19,7 @@ def ui_socket(*args, name='ui_req_from_scap', **kwargs):
     info(f"{socket.protocol_name} '{name}' dropped connection to {kwargs['dial']}")
     socket.close()
 
+
 @contextmanager
 def scapi_endpoint(*args, name='scapi_endpoint', **kwargs):
     '''Creates SCAPI endpoint socket'''
@@ -26,6 +28,7 @@ def scapi_endpoint(*args, name='scapi_endpoint', **kwargs):
     yield socket
     info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
     socket.close()
+
 
 def main():
     '''Main request forwarding loop'''
@@ -43,6 +46,7 @@ def main():
 
         while True:
             exchange_messages()
+
 
 if __name__ == '__main__':
     main()
