@@ -1,3 +1,20 @@
+.blink {
+    animation: blinker 2s infinite;
+    color: #a3ea20;
+}
+
+@keyframes blinker {
+    0% {
+        opacity 1;
+    }
+    49% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
 .terminal-interfaces {
     letter-spacing: 0.5em;
 }
