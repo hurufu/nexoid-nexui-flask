@@ -105,15 +105,21 @@ def notify_scap():
 
 notify_scap.ntf = None
 
+initialized = False
 
-@app.before_first_request
+
+@app.before_request
 def start_ui_server():
     '''Lazily starts UI request forwarder'''
+
+    global initialized
+    if initialized:
+        return
 
     def forward_ui_requests(**kwargs):
         '''Blindly forwards all UI requests to a web browser'''
         sleep(15)
-        with local_ui_requests_gatherer(**kwargs['nexui']) as nexui,\
+        with local_ui_requests_gatherer(**kwargs['nexui']) as nexui, \
              browser_distributor(**kwargs['browser']) as browser:
             sleep(2)
             while True:
@@ -176,3 +182,4 @@ def start_ui_server():
     threading.Thread(**nexoid_thread_params).start()
 
     sleep(15)
+    initialized = True
