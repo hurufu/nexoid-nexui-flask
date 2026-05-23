@@ -3,7 +3,7 @@
 import threading
 import queue
 from contextlib import contextmanager
-from logging import info, debug, error
+from logging import info, debug
 
 from pynng import Rep0, exceptions
 from . import scapi_message as sm
@@ -43,36 +43,32 @@ class ScapSession:
 
     def run(self):
         '''Main request forwarding loop for this session'''
-        try:
-            with scapi_endpoint(listen=self.listen_ipc) as fat:
-                # Set timeout so we can check self.running periodically
-                fat.recv_timeout = 1000  
-                while self.running:
-                    try:
-                        req = fat.recv()
-                    except exceptions.Timeout:
-                        continue
-                    
-                    debug(f"[{self.session_id}] Received SCAPI request {req}")
-                    sm.append_to_event_log('ScapiNngRequest', req)
-                    
-                    # Convert to JSON for UI
-                    ui_msg = sm.tonexui(req)
-                    ui_msg_str = ui_msg.decode('utf-8') if isinstance(ui_msg, bytes) else ui_msg
-                    
-                    # Send to UI via SocketIO
-                    self.socketio.emit('ui_request', ui_msg_str, to=self.session_id)
-                    
-                    # Wait for UI response
-                    rsp_json = self.ui_response_queue.get()
-                    if rsp_json is None:
-                        break # Stopped
-                        
-                    # Send response back to SCAPI
-                    rsp = sm.fromnexui(rsp_json)
-                    fat.send(rsp)
-                    debug(f"[{self.session_id}] SCAPI response {rsp}")
-                    sm.append_to_event_log('ScapiNngResponse', rsp)
-        except Exception as e:
-            error(f"[{self.session_id}] Exception in ScapSession: {e}")
-            
+        with scapi_endpoint(listen=self.listen_ipc) as fat:
+            # Set timeout so we can check self.running periodically
+            fat.recv_timeout = 1000
+            while self.running:
+                try:
+                    req = fat.recv()
+                except exceptions.Timeout:
+                    continue
+
+                debug(f"[{self.session_id}] Received SCAPI request {req}")
+                sm.append_to_event_log('ScapiNngRequest', req)
+
+                # Convert to JSON for UI
+                ui_msg = sm.tonexui(req)
+                ui_msg_str = ui_msg.decode('utf-8') if isinstance(ui_msg, bytes) else ui_msg
+
+                # Send to UI via SocketIO
+                self.socketio.emit('ui_request', ui_msg_str, to=self.session_id)
+
+                # Wait for UI response
+                rsp_json = self.ui_response_queue.get()
+                if rsp_json is None:
+                    break  # Stopped
+
+                # Send response back to SCAPI
+                rsp = sm.fromnexui(rsp_json)
+                fat.send(rsp)
+                debug(f"[{self.session_id}] SCAPI response {rsp}")
+                sm.append_to_event_log('ScapiNngResponse', rsp)
