@@ -1,28 +1,14 @@
 '''NEXUI - Demo UI for nexo-in-the-cloud'''
-import os
-import threading
 import subprocess
+import threading
+import uuid
 from logging.config import dictConfig
-from logging import (
-    info,
-    debug,
-    warning,
-    error,
-)
-from time import sleep
-from contextlib import contextmanager
-from traceback import print_exc
-
-from flask import (
-    Flask,
-    redirect,
-    url_for,
-    request,
-    send_from_directory,
-)
-
+from logging import info, debug
+from flask import Flask, send_from_directory, request
+from flask_socketio import SocketIO, emit, join_room, leave_room
 import pynng
-from timebudget import timebudget
+
+from .scap4nexui import ScapSession
 from . import scap4nexui
 
 dictConfig({
@@ -41,138 +27,116 @@ dictConfig({
     },
     'root': {
         'level': 'DEBUG',
-        'handlers': [
-            'wsgi'
-        ]
+        'handlers': ['wsgi']
     }
 })
 
-
-@contextmanager
-def browser_distributor(*args, name='browser_distributor', **kwargs):
-    '''Creates a socket for distributing requests to all connected browsers'''
-    socket = pynng.Surveyor0(*args, name=name, **kwargs)
-    info(f"{socket.protocol_name} '{name}' is listening on {kwargs['listen']}")
-    yield socket
-    info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
-    socket.close()
-
-
-@contextmanager
-def local_ui_requests_gatherer(*args, name='ui_gatherer', **kwargs):
-    '''Creates a socket context manager for gathering UI requests from local peers'''
-    socket = pynng.Rep0(*args, **kwargs)
-    info(f"{socket.protocol_name} '{name}' is listening on {kwargs['listen']}")
-    yield socket
-    info(f"{socket.protocol_name} '{name}' at {kwargs['listen']} is stopped")
-    socket.close()
-
-
-def notification_socket(*args, name='fat_notifier', **kwargs):
-    '''Creates a socket for FAT notifications'''
-    socket = pynng.Push0(*args, **kwargs)
-    info(f"{socket.protocol_name} '{name}' dialed to {kwargs['dial']}")
-    return socket
-
-
 app = Flask(__name__, instance_relative_config=True)
+app.config['SECRET_KEY'] = 'nexo-secret-key-123'
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 
-@app.route('/favicon.ico')
-def favicon():
-    '''Redirect to favicon'''
-    path = os.path.join(app.root_path, 'static')
-    return send_from_directory(path, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
+class SessionManager:
+    def __init__(self):
+        self.sessions = {}
+        self.lock = threading.Lock()
+
+    def create_session(self, sid):
+        with self.lock:
+            if sid in self.sessions:
+                self.destroy_session(sid)
+
+            session_id = str(uuid.uuid4())
+            req_ipc = f'ipc:///tmp/fatrq_{session_id}'
+            ntf_ipc = f'ipc:///tmp/fatnt_{session_id}'
+
+            # Start nexoid-cpp
+            prog = [
+                'nexoid-cpp',
+                '--req-ipc', req_ipc,
+                '--ntf-ipc', ntf_ipc
+            ]
+            info(f"[{sid}] Starting nexoid-cpp: {' '.join(prog)}")
+            with subprocess.Popen(prog) as proc:
+                # Start scap4nexui session handler
+                scap_session = ScapSession(sid, socketio, req_ipc)
+                scap_session.start()
+
+                # Create notification socket for UI -> nexoid
+                # We must wait a bit for nexoid-cpp to bind its Pull socket, or just dial and wait
+                ntf_socket = pynng.Push0(dial=ntf_ipc)
+
+                self.sessions[sid] = {
+                    'id': session_id,
+                    'proc': proc,
+                    'scap': scap_session,
+                    'ntf': ntf_socket
+                }
+
+    def get_session(self, sid):
+        with self.lock:
+            return self.sessions.get(sid)
+
+    def destroy_session(self, sid):
+        with self.lock:
+            sess = self.sessions.pop(sid, None)
+            if sess:
+                info(f"[{sid}] Destroying session")
+                sess['scap'].stop()
+                sess['ntf'].close()
+                if sess['proc']:
+                    sess['proc'].terminate()
+                    sess['proc'].wait(timeout=2)
 
 
-@app.route('/nexo', methods=['GET'])
-def get_scap_notification_form():
-    '''Simple redirect to the main page with frames'''
-    return redirect(url_for('static', filename='frames.html'))
+session_manager = SessionManager()
 
 
-@app.route('/nexo', methods=['POST'])
-def notify_scap():
-    '''Forward SCAPI notifications directly to FAT'''
-    if notify_scap.ntf is None:
-        # Figure out a way to cleanly shutdown SCAP notification socket
-        notify_scap.ntf = notification_socket(dial='ipc:///tmp/fatnt')
-    scap4nexui.sm.append_to_event_log('ScapiNngNotification', request.data)
-    notify_scap.ntf.send(request.data)
-    debug(f"Sent SCAP notification {request.data}")
-    return redirect(url_for('static', filename='notification.xhtml'))
+@app.route('/')
+def index():
+    return send_from_directory('static', 'index.html')
 
 
-notify_scap.ntf = None
+@app.route('/<path:path>')
+def static_files(path):
+    return send_from_directory('static', path)
 
 
-@app.before_first_request
-def start_ui_server():
-    '''Lazily starts UI request forwarder'''
+@socketio.on('connect')
+def handle_connect():
+    sid = request.sid
+    info(f"Client connected: {sid}")
+    join_room(sid)
+    session_manager.create_session(sid)
+    emit('connected', {'sid': sid}, to=sid)
 
-    def forward_ui_requests(**kwargs):
-        '''Blindly forwards all UI requests to a web browser'''
-        sleep(15)
-        with local_ui_requests_gatherer(**kwargs['nexui']) as nexui,\
-             browser_distributor(**kwargs['browser']) as browser:
-            sleep(2)
-            while True:
-                try:
-                    req = nexui.recv()
-                    debug(f"Received UI request {req}")
-                    with timebudget("Browser roundtrip", quiet=kwargs['quiet_time']):
-                        browser.send(req)
-                        rsp = browser.recv()
-                    nexui.send(rsp)
-                    debug(f"UI response {rsp}")
-                except pynng.exceptions.Timeout:
-                    error('Timeout exception suppressed')
-                    print_exc()
 
-    def run_external_program(**kwargs):
-        sleep(22)
-        while True:
-            info('Nexoid process started')
-            subprocess.run(kwargs['prog'], check=False)
-            warning('Nexoid process ended')
-            sleep(2)
+@socketio.on('disconnect')
+def handle_disconnect():
+    sid = request.sid
+    info(f"Client disconnected: {sid}")
+    leave_room(sid)
+    session_manager.destroy_session(sid)
 
-    def run_scap4nexui():
-        sleep(17)
-        return scap4nexui.main()
 
-    thread_params = {
-        'target': forward_ui_requests,
-        'name': 'reqfrwdr',
-        'daemon': True,
-        'kwargs': {
-            'browser': {
-                'listen': 'ws://*:51004',
-                'survey_time': 1 * 60 * 1000
-            },
-            'nexui': {
-                'listen': 'ipc:///tmp/nexui'
-            },
-            'quiet_time': True,
-        }
-    }
-    threading.Thread(**thread_params).start()
+@socketio.on('ui_response')
+def handle_ui_response(data):
+    '''Response from browser to SCAPI request'''
+    sid = request.sid
+    debug(f"[{sid}] Received UI response: {data}")
+    sess = session_manager.get_session(sid)
+    if sess:
+        sess['scap'].on_ui_response(data)
 
-    scap4nexui_thread_params = {
-        'target': run_scap4nexui,
-        'name': 'scap4nexui',
-        'daemon': True
-    }
-    threading.Thread(**scap4nexui_thread_params).start()
 
-    nexoid_thread_params = {
-        'target': run_external_program,
-        'name': 'nexoid_runner',
-        'daemon': True,
-        'kwargs': {
-            'prog': ['nexoid-cpp'],
-        }
-    }
-    threading.Thread(**nexoid_thread_params).start()
-
-    sleep(15)
+@socketio.on('ui_notification')
+def handle_ui_notification(data):
+    '''Notification from browser (e.g. nexo request start) directly to nexoid-cpp'''
+    sid = request.sid
+    debug(f"[{sid}] Received UI notification: {data}")
+    sess = session_manager.get_session(sid)
+    if sess:
+        apdu = scap4nexui.scapi_message.asn_nexui.decode('ScapiNngNotification', data, check_constraints=True)
+        xer_bytes = scap4nexui.scapi_message.asn.encode('ScapiNngNotification', apdu, check_constraints=True)
+        scap4nexui.scapi_message.append_to_event_log('ScapiNngNotification', xer_bytes)
+        sess['ntf'].send(xer_bytes)
